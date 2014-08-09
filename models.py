@@ -45,6 +45,10 @@ class Char(BaseModel):
     worns = ndb.KeyProperty(repeated=True)
     action_timeout = ndb.DateTimeProperty(auto_now_add=True)  # can't do anything if this > dt.now()
 
+    @classmethod
+    def get_char_by_user(cls, user):
+        pass
+
 
 class Item(BaseModel):
     name = ndb.StringProperty(required=True)

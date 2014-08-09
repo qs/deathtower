@@ -18,11 +18,7 @@ class BaseHandler(webapp2.RequestHandler):
     def __init__(self, request, response):
         self.initialize(request, response)
         self.user = users.get_current_user()
-        self.char = self.get_current_char() if self.user else None
-
-    def get_current_char(self):
-        # returns character object
-        return None
+        self.char = Char.get_char_by_user(self.user) if self.user else None
 
     def render(self, tpl_file, tvals={}):
         tvals['logout'] = users.create_logout_url("/")
@@ -114,7 +110,6 @@ class GardenHandler(BaseHandler):
     def post(self):
             # watering plants, puck up fruits, remove plant
             self.redirect('/garden/')
-
 
 
 app = webapp2.WSGIApplication([
