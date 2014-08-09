@@ -234,6 +234,9 @@ class Room(BaseModel):  # tournament session room
     items = ndb.KeyProperty(repeated=True) # list of Item
     dirs = ndb.KeyProperty(repeated=True)  # keys of rooms to go
 
+    def get_dirs(self):
+        return [r.get() for r in self.dirs]
+
 
 class Garden(BaseModel):  # tournament session room
     char = ndb.KeyProperty(required=True)  # owner
