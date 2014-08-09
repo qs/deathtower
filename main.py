@@ -121,7 +121,8 @@ class RoomHandler(BaseHandler):
             self.redirect('/room/')
         elif self.request.get('room_fight'):
             char_to_fight = Char.getone(int(escape(self.request.get('room_fight_id'))))
-            battle = char_to_fight.battle if char_to_fight.battle else Battle.generate_new(chars=[char_to_fight, self.char])
+            battle = char_to_fight.battle if char_to_fight.battle else Battle.generate_new(chars=[char_to_fight, self.char],room=self.char.room)
+            self.redirect('/battle/')
 
 
 class FinalHandler(BaseHandler):

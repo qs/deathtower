@@ -24,6 +24,7 @@
   </div>
 </form>
 
+{% if room.get_chars() %}
 Или можете подраться:
 <form class="form-horizontal" role="form" method="POST">
     {% for c in room.get_chars() %}
@@ -43,12 +44,13 @@
     </div>
   </div>
 </form>
+{% endif %}
 
+{% if room.get_items()%}
+В комнате есть вещи:
 {% for item in room.get_items() %}
     {{ item.name }}
 {% endfor %}
-список игроков в комнате
-список боев с игроками в комнате
-разбросанные вещи
+{%endif%}
 
 {% endblock %}
