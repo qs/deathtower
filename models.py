@@ -17,13 +17,28 @@ ITEM_DRINK = 4  # can use for effect
 
 ITEM_TYPES = [ITEM_MISC, ITEM_HAND, ITEM_BODY, ITEM_HEAD, ITEM_DRINK]
 
-DEFAULT_CHARACTER_ATTRS = {
+DEFAULT_CHAR_ATTRS = {
     'hp': 100,
     'hp_max': 100,
     'dmg': 3,
     'spd': 5,
     'ap': 10
 }
+
+DEFAULT_SKILL_ATTRS = {
+    'dmg': 3,
+    'ap': 3,
+    'req_str': 1,
+    'req_dex': 1,
+    'req_con': 1,
+    'req_int': 1,
+}
+
+DEFAULT_TOUR_ATTRS = {
+    'min_lvl': 0,
+    'max_lvl': 99,
+}
+
 
 class BaseModel(ndb.Model):
     @classmethod
@@ -40,17 +55,36 @@ class Char(BaseModel):
     user = ndb.UserProperty(required=True)
     dt = ndb.DateTimeProperty(auto_now_add=True)
     name = ndb.StringProperty(required=True)
-    attrs = ndb.JsonProperty(default=DEFAULT_CHARACTER_ATTRS)
-    items = ndb.KeyProperty(repeated=True)
-    worns = ndb.KeyProperty(repeated=True)
+    attrs = ndb.JsonProperty(default=DEFAULT_CHAR_ATTRS)
+    level = ndb.IntegerProperty(default=1)
+    exp = ndb.IntegerProperty(default=0)
+    items = ndb.KeyProperty(repeated=True)  # list of Item that are in inventory
+    worns = ndb.KeyProperty(repeated=True)  # list of Item that are on char
     action_timeout = ndb.DateTimeProperty(auto_now_add=True)  # can't do anything if this > dt.now()
-    battle = ndb.KeyProperty()
-    tour = ndb.KeyProperty()
+    battle = ndb.KeyProperty()  # Battle key, where char take place
+    tour = ndb.KeyProperty()  # Tour key, where char take place
+    skills = ndb.KeyProperty(repeated=True)  # list of Skill
+    effects = ndb.KeyProperty(repeated=True)  # list of CharEffect
 
     @classmethod
     def get_char_by_user(cls, user):
         char = cls.query(cls.user==user).get()
         return char
+
+
+class CharEffect():
+    effect = ndb.KeyProperty(required=True)
+    finish_turn = ndb.IntegerProperty(required=True, default=1)
+
+
+class Effect():
+    name = ndb.StringProperty(required=True)
+    attrs = ndb.JsonProperty(default=[])
+
+
+class Skill():
+    name = ndb.StringProperty(required=True)
+    attrs = ndb.JsonProperty(default=DEFAULT_SKILL_ATTRS)
 
 
 class Item(BaseModel):
@@ -64,12 +98,18 @@ class Item(BaseModel):
 class Tour(BaseModel):
     dt = ndb.DateTimeProperty(auto_now_add=True)  # request dt
     start_dt = ndb.DateTimeProperty(required=True)  # tournament starts
-    finish_dt = ndb.DateTimeProperty()  #
+    finish_dt = ndb.DateTimeProperty()
     status = ndb.IntegerProperty(required=True,
             default=TOUR_NEW,
             choices=[TOUR_NEW, TOUR_PROGRESS, TOUR_FINISHED])
+    attrs = ndb.JsonProperty(default=DEFAULT_TOUR_ATTRS)
     chars = ndb.KeyProperty(repeated=True)
     chars_alive = ndb.KeyProperty(repeated=True)
+
+    @classmethod
+    def get_tour_requests(cls):
+        tours = cls.query(cls.status==TOUR_NEW)
+        return tours
 
 
 class Room(BaseModel):  # tournament session room
