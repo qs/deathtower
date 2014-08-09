@@ -32,86 +32,91 @@ class BaseHandler(webapp2.RequestHandler):
 
 class WelcomeHandler(BaseHandler):
     def get(self):
-            # promo page
-            self.render('welcome')
+        # promo page
+        self.render('welcome')
 
 
 class JoinHandler(BaseHandler):
     def get(self):
-            if self.char:
-                self.redirect('/tour/')
-            # check if char exists, character creation screen
-            self.render('join')
+        # check if char exists, character creation screen
+        if self.char:  # you already have char!
+            self.redirect('/tour/')
+        self.render('join')
 
     def post(self):
-            # create character
+        # create character
+        if self.request.get('char_add'):
+            name = escape(self.request.get('char_name'))
+            char = Char(user=self.user, name=name)
+            char.put()
             self.redirect('/tour/')
-
+        else:
+            self.redirect('/join/')
 
 class TourHandler(BaseHandler):
     def get(self):
-            # list ofr tounaments
-            self.render('tour')
+        # list ofr tounaments
+        self.render('tour')
 
     def post(self):
-            # join or create tournament request
-            self.redirect('/tour/')
+        # join or create tournament request
+        self.redirect('/tour/')
 
 
 class RoomHandler(BaseHandler):
     def get(self):
-            # room screen
-            self.render('room')
+        # room screen
+        self.render('room')
 
     def post(self):
-            # move to another room, attack person or pickiu item
-            self.redirect('/room/')
+        # move to another room, attack person or pickiu item
+        self.redirect('/room/')
 
 
 class FinalHandler(BaseHandler):
     def get(self):
-            # show stats after final battle finishing tournament
-            self.render('final')
+        # show stats after final battle finishing tournament
+        self.render('final')
 
 
 class CharHandler(BaseHandler):
     def get(self):
-            # character screen, stats
-            self.render('char')
+        # character screen, stats
+        self.render('char')
 
     def post(self):
-            # update stats
-            self.redirect('/char/')
+        # update stats
+        self.redirect('/char/')
 
 
 class ItemsHandler(BaseHandler):
     def get(self):
-            # inventory screen
-            self.render('items')
+        # inventory screen
+        self.render('items')
 
     def post(self):
-            # use item, put on, take off item, drop down
-            self.redirect('/items/')
+        # use item, put on, take off item, drop down
+        self.redirect('/items/')
 
 
 class BattleHandler(BaseHandler):
     def get(self):
-            # compose your turn, wait for others
-            self.render('battle')
+        # compose your turn, wait for others
+        self.render('battle')
 
     def post(self):
-            # char if everyone compose turn compute turns
-            self.redirect('/battle/')
+        # char if everyone compose turn compute turns
+        self.redirect('/battle/')
 
 
 class GardenHandler(BaseHandler):
     def get(self):
-            # plants, fruits
-            self.render('garden')
+        # plants, fruits
+        self.render('garden')
 
     def post(self):
-            # watering plants, puck up fruits, remove plant
-            self.redirect('/garden/')
+        # watering plants, puck up fruits, remove plant
+        self.redirect('/garden/')
 
 
 app = webapp2.WSGIApplication([

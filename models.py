@@ -49,7 +49,8 @@ class Char(BaseModel):
 
     @classmethod
     def get_char_by_user(cls, user):
-        pass
+        char = cls.query(cls.user==user).get()
+        return char
 
 
 class Item(BaseModel):
