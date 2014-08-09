@@ -97,7 +97,6 @@ class Char(BaseModel):
     effects = ndb.KeyProperty(repeated=True)  # list of CharEffect
     room = ndb.KeyProperty()  # Room in tournament
 
-    #MAKE HP TODO XXX 666
     @classmethod
     def get_char_by_user(cls, user):
         char = cls.query(cls.user==user).get()
@@ -113,8 +112,8 @@ class Char(BaseModel):
         return dmg
 
     def fight(self, target):
-        dmg = 1 + self.stats['STR'] / 2 + self.get_add_patk()
-        is_crit = True if random.randint(1, 100) in range(1, 5 * (self.stats['DEX'] / 2) + 1) else False
+        dmg = 1 + self.attrs['STR'] / 2 + self.get_add_patk()
+        is_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['DEX'] / 2) + 1) else False
         target.acc_dmg(-dmg, is_crit)
 
     def lose(self):
@@ -126,11 +125,11 @@ class Char(BaseModel):
         self.put()
 
     def acc_dmg(self, dmg, is_crit):
-        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.stats['DEX'] / 2) + 1) else False
+        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['DEX'] / 2) + 1) else False
         mod = 2 if is_crit and not me_crit else 1
         mod = 0.5 if me_crit and not is_crit else mod
-        self.hp += -int(dmg * mod)
-        if self.hp <= 0:
+        self.attrs['hp'] += -int(dmg * mod)
+        if self.attrs['hp'] <= 0:
             self.lose()
 
     @property
@@ -321,5 +320,9 @@ class Battle(BaseModel):
     @classmethod
     def generate_new(self, chars, room):
         battle = Battle(**{'chars': chars, 'chars_alive': chars, 'room': room})
+        for c in chars:
+            character = c.get()
+            character.battle = battle
+            character.put()
         battle.put()
         return battle.key.get()
