@@ -159,9 +159,11 @@ class BattleHandler(BaseHandler):
 
 class GardenHandler(BaseHandler):
     def get(self):
-
+        garden = self.char.garden
+        plants, already_items = garden.get_visited()
+        seeds = [i for i in self.char.items if i.type == ITEM_SEED]
         # plants, fruits
-        self.render('garden')
+        self.render('garden', {'plants': plants, 'already_items': already_items, 'seeds': seeds})
 
     def post(self):
         # watering plants, puck up fruits, remove plant
