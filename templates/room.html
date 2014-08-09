@@ -27,12 +27,14 @@
 Или можете подраться:
 <form class="form-horizontal" role="form" method="POST">
     {% for c in room.get_chars() %}
+    {% if c.key != char.key %}
     <div class="radio" >
       <label>
         <input type="radio" name="room_fight_id" id="char{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
           {{ c.name }}
       </label>
     </div>
+    {% endif %}
     {% endfor %}
   <br />
   <div class="form-group">
