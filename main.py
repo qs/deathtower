@@ -63,9 +63,8 @@ class TourHandler(BaseHandler):
             # temp check if time to start tournament
             tour = self.char.tour.get()
             if tour.start_dt >= datetime.now():
-                tour.status = TOUR_PROGRESS
-                tour.put()
-                tour.start_tour() # place rooms, items, chars
+                tour.start_tour() # place rooms, items, chars, update status
+                self.redirect('/room/')
             # not showing list if char already choose tour
             tours_cnt = 1
             tours = [tour, ]

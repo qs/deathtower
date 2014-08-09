@@ -38,6 +38,16 @@ DEFAULT_TOUR_ATTRS = {
 }
 
 
+ROOM_GRAPH = {
+    u'Комнатка Самоубийсв': {'dirs': [u'Холл Безнадежности', u''], 'desrc': u""},
+    u'Прачечная Совести': {'dirs': [u'Холл Безнадежности', u'Коридор Тлена'], 'desrc': u""},
+    u'Коридор Тлена': {'dirs': [u'Прачечная Совести', u'Столовая Безжизненности'], 'desrc': u'Кабинет Сожалений'},
+    u'Холл Безнадежности': {'dirs': [u'Комнатка Самоубийсв', u'Кабинет Сожалений'], 'desrc': u""},
+    u'Кабинет Сожалений': {'dirs': [u'Столовая Безжизненности', u'Коридор Тлена'], 'desrc': u""},
+    u'Столовая Безжизненности': {'dirs': [u'Прачечная Совести', u'Комнатка Самоубийсв'], 'desrc': u""},
+}
+
+
 class BaseModel(ndb.Model):
     @classmethod
     def getone(c, key_name):
@@ -115,11 +125,32 @@ class Tour(BaseModel):
             tour.chars_obj = [ch.get() for ch in tour.chars]
         return cnt, tours
 
+    def start_tour(self):
+        # update status
+        self.status = TOUR_PROGRESS
+        self.put()
+        # create rooms if nessesary
+        q = Room.query()
+        if q.count() == 0:
+            room_keys = {}
+            for room_name in ROOM_GRAPH.keys():
+                room = Room(name=room_name)
+                room_key = room.put()
+                room_keys[room_name] = room_key
+            for room_name, room_data in ROOM_GRAPH.items():
+                room = Room.query(Room.name==room_name)
+                room.dirs = [room_keys[r] for r in room_data['dirs']]
+                room.put()
+        # place chars
+
+        # place items
+
 
 class Room(BaseModel):  # tournament session room
     name = ndb.StringProperty(required=True)
-    items = ndb.KeyProperty(repeated=True)
+    items = ndb.KeyProperty(repeated=True) # list of Item
     dirs = ndb.KeyProperty(repeated=True)  # keys of rooms to go
+    chars = ndb.KeyProperty(repeated=True)  # list of Char
 
 
 class Garden(BaseModel):  # tournament session room
@@ -137,4 +168,4 @@ class Battle(BaseModel):
             choices=[BATTLE_PROGRESS, BATTLE_FINISHED])
     chars = ndb.KeyProperty(repeated=True)
     chars_alive = ndb.KeyProperty(repeated=True)
-
+    room = ndb.KeyProperty()
