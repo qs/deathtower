@@ -38,6 +38,8 @@ class WelcomeHandler(BaseHandler):
 
 class JoinHandler(BaseHandler):
     def get(self):
+            if self.char:
+                self.redirect('/tour/')
             # check if char exists, character creation screen
             self.render('join')
 
