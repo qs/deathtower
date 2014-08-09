@@ -320,6 +320,6 @@ class Battle(BaseModel):
 
     @classmethod
     def generate_new(self, chars, room):
-        battle = Battle({'chars': chars, 'chars_alive': chars, 'room': room})
+        battle = Battle(**{'chars': chars, 'chars_alive': chars, 'room': room})
         battle.put()
         return battle.key.get()
