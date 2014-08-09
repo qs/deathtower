@@ -149,8 +149,11 @@ class Tour(BaseModel):
         cnt = q.count()
         tours = q.order(Tour.start_dt)
         for tour in tours:
-            tour.chars_obj = [ch.get() for ch in tour.chars]
+            tour.upd_chars()
         return cnt, tours
+
+    def upd_chars(self):
+        self.chars_obj = [ch.get() for ch in self.chars]
 
     def start_tour(self):
         # update status
