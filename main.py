@@ -64,7 +64,7 @@ class WelcomeHandler(BaseHandler):
                    Welcome back!  <button onClick="location.href='/logout'">logout</button>
                    """)
             else:
-                   self.render('welcome')
+                   self.render('welcome2')
 
 class Signup(BaseHandler):
     def get(self):
@@ -139,7 +139,7 @@ class Logout(BaseHandler):
 
 class JoinHandler(BaseHandler):
     def get(self):
-            # character creation screen
+            # check if char exists, character creation screen
             self.render('join')
 
     def post(self):
@@ -205,7 +205,7 @@ class BattleHandler(BaseHandler):
 
 class GardenHandler(BaseHandler):
     def get(self):
-            # plants, friuts
+            # plants, fruits
             self.render('garden')
 
     def post(self):

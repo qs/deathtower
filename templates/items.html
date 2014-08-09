@@ -1,0 +1,56 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Инвентарь{% endblock %}
+
+
+{% block content %}
+<div class="row">
+  	<button type="button" class="btn"><span class="glyphicon glyphicon-move"></span></button><button type="button" class="btn"><span class="glyphicon glyphicon-envelope"></button>
+  	<div class="row">
+  		<div class="col-xs-1 label label-danger">HP {% hp %}</div>
+  		<div class="col-xs-1 label label-primary">MP {% mp %}</div>
+  		<div class="col-xs-1 label label-warning">AP {% ap %}</div>
+  		{% nickname %}
+  	</div>
+  	 <div class="row">
+	  	 <div class="col-xs-3">
+	  	 	<p>Одежда: {% shmot.head %}</p>
+	  	 	<p>{% shmot.body %}</p>
+	  	 	<p>{% shmot.hand %}</p>
+	  	 </div>
+  	</div>
+  	<!--INVENTORY-->
+  	<div class="row">
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+</div>
+<div class="row">
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+</div>
+<div class="row">
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+</div>
+    </div>
+
+
+{% endblock %}
