@@ -4,19 +4,43 @@
 
 
 {% block content %}
+<div class="row">
+{% if plants %}
 Рассада:
         {% for p in plants %}
         {{p.name}}
         {% endfor %}
-
+{% endif %}
+</div>
+<div class="row">
+{% if already_items %}
 Урожай:
-{%for p in already_items%}
-{{p.name}}
+{% for p in already_items %}
+{% if p.name %}{{ p.name }}{% else %} Лечилка {% endif %}
 {% endfor %}
-
+{% endif %}
+{% if seeds%}
+</div>
+        <div class="row">
 Посадить:
-{%for p in seeds%}
-{{p.name}} <input type="submit" id="room_move" name="room_move" class="btn btn-default" value="Идти">
-{% endfor %}
 
+<form class="form-horizontal" role="form" method="POST">
+    {% for s in seeds %}
+    <div class="radio" >
+      <label>
+        <input type="radio" name="seed_id" id="char{{ s.id() }}" value="{{ s.id() }}" {% if loop.first %}checked{% endif %}>
+          {% if s.name %}{{ s.name }}{% else %} Семечко {% endif %}
+      </label>
+    </div>
+    {% endfor %}
+  <br />
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" id="seed" name="seed" class="btn btn-default" value="Посадить">
+    </div>
+  </div>
+</form>
+
+{% endif %}
+</div>
 {% endblock %}

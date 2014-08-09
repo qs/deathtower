@@ -139,15 +139,16 @@ class Char(BaseModel):
 
     @property
     def garden(self):
-        return Garden.query(Garden.char == self).get()
+        return Garden.query(Garden.char == self.key).get()
 
 
 class CharEffect():
     effect = ndb.KeyProperty(required=True)
     finish_turn = ndb.IntegerProperty(required=True, default=1)
+    char = ndb.KeyProperty(required=True)
 
     def check_effect(self):
-        if self.battle.current_turn >= self.finish_turn:
+        if self.char.battle.current_turn >= self.finish_turn:
             self.disable_effect()
 
     def disable_effect(self):
@@ -171,8 +172,9 @@ class Item(BaseModel):
     attrs = ndb.JsonProperty(default=[])
 
     @classmethod
-    def generate(self, item_type, char=None):
-        item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
+    def generate(self, item_type, char=None, item_name=None):
+        if not item_name:
+            item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
         new_item = Item(name=item_name, type=item_type)
         special_attr = ITEM_ATTRS[item_type]
         new_item.attrs = {special_attr: 1}
@@ -180,6 +182,9 @@ class Item(BaseModel):
             new_item.attrs = {special_attr: 3}
         new_item_id = new_item.put()
         new_item = new_item_id.get()
+        if char:
+            char = char.get()
+            char.items = char.items + [new_item.key,]
         return new_item
 
 class Tour(BaseModel):
@@ -268,7 +273,8 @@ class Garden(BaseModel):  # tournament session room
     plants = ndb.JsonProperty(default=[])  # plants, their fruits and dt of riping
 
     def get_visited(self):
-        all_plants = Plant.query(Plant.garden == self)
+        Item.generate(ITEM_SEED, self.char, u'Semka')
+        all_plants = Plant.query(Plant.garden == self.key)
         plants = []
         already_items = []
         now = datetime.datetime.now()
@@ -285,10 +291,16 @@ class Garden(BaseModel):  # tournament session room
             pl = Plant()
             pl.name = u'Растение'
             pl.type = [PLANT_ARMOR, PLANT_WEAPON, PLANT_BOTTLE][random.randint(0,2)]
-            pl.garden = self
+            pl.garden = self.key
             pl.dt = datetime.datetime.now()
             pl.put()
-            seed.delete()
+            self.plants = self.plants + [pl.key,]
+            seed.key.delete()
+
+    @classmethod
+    def generate(cls, char):
+        new_garden = Garden(**{'char': char.key})
+        new_garden.put()
 
 class Plant(BaseModel):
     name = ndb.StringProperty(required=True)
@@ -327,7 +339,7 @@ class Battle(BaseModel):
         battle = Battle(**{'chars': chars, 'chars_alive': chars, 'room': room})
         for c in chars:
             character = c.get()
-            character.battle = battle
+            character.battle = battle.key
             character.put()
         battle.put()
         return battle.key.get()
