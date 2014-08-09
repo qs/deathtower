@@ -16,8 +16,9 @@ ITEM_HAND = 1  # can put on hand (weapon)
 ITEM_BODY = 2  # can wear on body (armor)
 ITEM_HEAD = 3  # can wear on head (helmet)
 ITEM_DRINK = 4  # can use for effect
+ITEM_SEED = 5 # a seed, for use in garden
 
-ITEM_TYPES = [ITEM_MISC, ITEM_HAND, ITEM_BODY, ITEM_HEAD, ITEM_DRINK]
+ITEM_TYPES = [ITEM_MISC, ITEM_HAND, ITEM_BODY, ITEM_HEAD, ITEM_DRINK, ITEM_SEED]
 
 DEFAULT_CHAR_ATTRS = {
     'hp': 10,
@@ -57,13 +58,13 @@ ITEM_NAMES = {ITEM_HEAD: [u'Шлем', u'Жуткий шлем'],
                 ITEM_BODY: [u'Доспех радости', u'Доспех дня'],
                 ITEM_HAND: [u'Дубинка радости', u'Букет', u'Вашь мечь'],
                 ITEM_DRINK: [u'Лечилка', u'Мега-лечилка'],
-                ITEM_MISC: [u'Семечко подсолнуха', u'Красивое семечко']}
+                ITEM_SEED: [u'Семечко подсолнуха', u'Красивое семечко']}
 
 ITEM_ATTRS = {ITEM_HEAD: 'res_dmg',
                 ITEM_BODY: 'res_dmg',
                 ITEM_HAND: 'dmg',
                 ITEM_DRINK: 'hp',
-                ITEM_MISC: 'type'}
+                ITEM_SEED: 'type'}
 
 class BaseModel(ndb.Model):
     @classmethod
@@ -255,6 +256,16 @@ class Garden(BaseModel):  # tournament session room
             else:
                 plants.append(plant)
         return plants, already_items
+
+    def plant_smth(self, seed):
+        if seed.type == ITEM_SEED:
+            pl = Plant()
+            pl.name = u'Растение'
+            pl.type = [PLANT_ARMOR, PLANT_WEAPON, PLANT_BOTTLE][random.randint(0,2)]
+            pl.garden = self
+            pl.dt = datetime.datetime.now()
+            pl.put()
+            seed.delete()
 
 class Plant(BaseModel):
     name = ndb.StringProperty(required=True)
