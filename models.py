@@ -131,7 +131,7 @@ class Char(BaseModel):
 
     @property
     def garden(self):
-        return Garden.query(Garden.char == self)
+        return Garden.query(Garden.char == self).get()
 
 
 class CharEffect():
@@ -172,7 +172,8 @@ class Item(BaseModel):
         new_item.attrs = {special_attr: 1}
         if 'ега' in item_name:
             new_item.attrs = {special_attr: 3}
-        new_item.put()
+        new_item_id = new_item.put()
+        new_item = new_item_id.get()
         return new_item
 
 class Tour(BaseModel):
@@ -237,6 +238,9 @@ class Room(BaseModel):  # tournament session room
 
     def get_dirs(self):
         return [r.get() for r in self.dirs]
+
+    def get_chars(self):
+        return Char.query(Char.room == self)
 
 
 class Garden(BaseModel):  # tournament session room

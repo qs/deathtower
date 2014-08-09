@@ -24,6 +24,24 @@
   </div>
 </form>
 
+Или можете подраться:
+<form class="form-horizontal" role="form" method="POST">
+    {% for c in room.get_chars() %}
+    <div class="radio" >
+      <label>
+        <input type="radio" name="room_move_id" id="char{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
+          {{ c.name }}
+      </label>
+    </div>
+    {% endfor %}
+  <br />
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" id="room_fight" name="room_fight" class="btn btn-default" value="В бой!">
+    </div>
+  </div>
+</form>
+
 список игроков в комнате
 список боев с игроками в комнате
 разбросанные вещи
