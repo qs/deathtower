@@ -4,7 +4,6 @@
 import webapp2
 import jinja2
 import os
-import re
 import json
 from cgi import escape
 from google.appengine.api import users
@@ -37,12 +36,6 @@ class BaseHandler(webapp2.RequestHandler):
 
 class WelcomeHandler(BaseHandler):
     def get(self):
-            pass
-            #self.render('welcome')
-
-
-class WelcomeHandler(BaseHandler):
-    def get(self):
             # promo page
             self.render('welcome')
 
@@ -56,6 +49,71 @@ class JoinHandler(BaseHandler):
             # create character
             self.redirect('/tour/')
 
+
+class TourHandler(BaseHandler):
+    def get(self):
+            # list ofr tounaments
+            self.render('tour')
+
+    def post(self):
+            # join or create tournament request
+            self.redirect('/tour/')
+
+
+class RoomHandler(BaseHandler):
+    def get(self):
+            # room screen
+            self.render('room')
+
+    def post(self):
+            # move to another room, attack person or pickiu item
+            self.redirect('/room/')
+
+
+class FinalHandler(BaseHandler):
+    def get(self):
+            # show stats after final battle finishing tournament
+            self.render('final')
+
+
+class CharHandler(BaseHandler):
+    def get(self):
+            # character screen, stats
+            self.render('char')
+
+    def post(self):
+            # update stats
+            self.redirect('/char/')
+
+
+class ItemsHandler(BaseHandler):
+    def get(self):
+            # inventory screen
+            self.render('items')
+
+    def post(self):
+            # use item, put on, take off item, drop down
+            self.redirect('/items/')
+
+
+class BattleHandler(BaseHandler):
+    def get(self):
+            # compose your turn, wait for others
+            self.render('battle')
+
+    def post(self):
+            # char if everyone compose turn compute turns
+            self.redirect('/battle/')
+
+
+class GardenHandler(BaseHandler):
+    def get(self):
+            # plants, friuts
+            self.render('garden')
+
+    def post(self):
+            # watering plants, puck up fruits, remove plant
+            self.redirect('/garden/')
 
 
 
@@ -72,4 +130,5 @@ app = webapp2.WSGIApplication([
     ('/items/', ItemsHandler), # inventory
 
     ('/battle/', BattleHandler), # evething for battles
+    ('/garden/', GardenHandler), # evething for ogorod
 ], debug=True)
