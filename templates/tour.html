@@ -5,8 +5,13 @@
 
 {% block content %}
 <div class="row">
-          <div class="span12">
+    <table class="table">
+        {% for tour in tours %}
+            <tr><td>{% tour.start_dt %}</td>
+                {% if not user.tour %}<td><button type="button" class="btn"><span class="glyphicon glyphicon-ok"></span></button></td>{% endif %}
+            </tr>
+        {% endfor %}
+    </table>
 список турниров с игроками
-        </div>
     </div>
 {% endblock %}

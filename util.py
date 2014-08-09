@@ -6,7 +6,7 @@ from string import letters
 
 SECRET = 'uQDZLzdh65gJxoLTqmZ8'
 
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+USER_RE = re.compile(r"^[a-zA-Z0-9_\-\@]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
     
