@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 import random
+import datetime
 from google.appengine.ext import ndb
 
 TOUR_NEW = 0
@@ -19,11 +20,11 @@ ITEM_DRINK = 4  # can use for effect
 ITEM_TYPES = [ITEM_MISC, ITEM_HAND, ITEM_BODY, ITEM_HEAD, ITEM_DRINK]
 
 DEFAULT_CHAR_ATTRS = {
-    'hp': 100,
-    'hp_max': 100,
-    'dmg': 3,
+    'hp': 10,
+    'hp_max': 10,
+    'dmg': 1,
     'spd': 5,
-    'ap': 10
+    'ap': 2
 }
 
 DEFAULT_SKILL_ATTRS = {
@@ -38,6 +39,10 @@ DEFAULT_SKILL_ATTRS = {
 DEFAULT_TOUR_ATTRS = {
 }
 
+PLANT_ARMOR = ITEM_BODY
+PLANT_WEAPON = ITEM_HAND
+PLANT_BOTTLE = ITEM_DRINK
+DEFAULT_PLANT_DURATION = ITEM_DRINK
 
 ROOM_GRAPH = {
     u'Комнатка Самоубийсв': {'dirs': [u'Холл Безнадежности', u'Коридор Тлена'], 'desrc': u""},
@@ -48,6 +53,17 @@ ROOM_GRAPH = {
     u'Столовая Безжизненности': {'dirs': [u'Прачечная Совести', u'Комнатка Самоубийсв'], 'desrc': u""},
 }
 
+ITEM_NAMES = {ITEM_HEAD: [u'Шлем', u'Жуткий шлем'],
+                ITEM_BODY: [u'Доспех радости', u'Доспех дня'],
+                ITEM_HAND: [u'Дубинка радости', u'Букет', u'Вашь мечь'],
+                ITEM_DRINK: [u'Лечилка', u'Мега-лечилка'],
+                ITEM_MISC: [u'Семечко подсолнуха', u'Красивое семечко']}
+
+ITEM_ATTRS = {ITEM_HEAD: 'res_dmg',
+                ITEM_BODY: 'res_dmg',
+                ITEM_HAND: 'dmg',
+                ITEM_DRINK: 'hp',
+                ITEM_MISC: 'type'}
 
 class BaseModel(ndb.Model):
     @classmethod
@@ -76,6 +92,7 @@ class Char(BaseModel):
     effects = ndb.KeyProperty(repeated=True)  # list of CharEffect
     room = ndb.KeyProperty()  # Room in tournament
 
+    #MAKE HP TODO XXX 666
     @classmethod
     def get_char_by_user(cls, user):
         char = cls.query(cls.user==user).get()
@@ -84,7 +101,7 @@ class Char(BaseModel):
     def get_add_patk(self):
         dmg = 0
         for e in self.effects:
-            dmg += e.attrs.get('patk')
+            dmg += e.attrs.get('dmg')
         for w in self.worns:
             if w.type == 'item_hand':
                 dmg += w.attrs.get('dmg')
@@ -95,11 +112,25 @@ class Char(BaseModel):
         is_crit = True if random.randint(1, 100) in range(1, 5 * (self.stats['DEX'] / 2) + 1) else False
         target.acc_dmg(-dmg, is_crit)
 
+    def lose(self):
+        self.battle.lose(self)
+        self.tour.lose(self)
+        self.battle = None
+        self.tour = None
+        self.room = None
+        self.put()
+
     def acc_dmg(self, dmg, is_crit):
         me_crit = True if random.randint(1, 100) in range(1, 5 * (self.stats['DEX'] / 2) + 1) else False
         mod = 2 if is_crit and not me_crit else 1
         mod = 0.5 if me_crit and not is_crit else mod
         self.hp += -int(dmg * mod)
+        if self.hp <= 0:
+            self.lose()
+
+    @property
+    def garden(self):
+        return Garden.query(Garden.char == self)
 
 
 class CharEffect():
@@ -130,6 +161,18 @@ class Item(BaseModel):
             choices=ITEM_TYPES)
     attrs = ndb.JsonProperty(default=[])
 
+    @classmethod
+    def generate(self, item_type, char=None):
+        item_name = random.randint(1, len(ITEM_NAMES[item_type]))
+        new_item = Item()
+        new_item.name = item_name
+        new_item.type = item_type
+        special_attr = ITEM_ATTRS[type]
+        new_item.attrs = {special_attr: 1}
+        if 'ега' in item_name:
+            new_item.attrs = {special_attr: 3}
+        new_item.put()
+        return new_item
 
 class Tour(BaseModel):
     dt = ndb.DateTimeProperty(auto_now_add=True)  # request dt
@@ -155,6 +198,10 @@ class Tour(BaseModel):
 
     def upd_chars(self):
         self.chars_obj = [ch.get() for ch in self.chars]
+
+    def lose(self, pers):
+        self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.put()
 
     def start_tour(self):
         # update status
@@ -193,6 +240,34 @@ class Garden(BaseModel):  # tournament session room
     attrs = ndb.JsonProperty(default=[])  # size, filled, watered
     plants = ndb.JsonProperty(default=[])  # plants, their fruits and dt of riping
 
+    def get_visited(self):
+        all_plants = Plant.query(Plant.garden == self)
+        plants = []
+        already_items = []
+        now = datetime.datetime.now()
+        for plant in all_plants:
+            if now <= plant.finish_dt:
+                fruit = plant.get_fruit()
+                already_items.append(fruit)
+            else:
+                plants.append(plant)
+        return plants, already_items
+
+class Plant(BaseModel):
+    name = ndb.StringProperty(required=True)
+    type = ndb.IntegerProperty(required=True,
+            default=PLANT_ARMOR,
+            choices=[PLANT_ARMOR, PLANT_WEAPON, PLANT_BOTTLE])
+    garden = ndb.KeyProperty(required=True)
+    dt = ndb.DateTimeProperty(auto_now_add=True)
+    finish_dt = ndb.DateTimeProperty(default=datetime.datetime.now() + datetime.timedelta(minutes=DEFAULT_PLANT_DURATION))
+
+    def get_fruit(self):
+        now = datetime.datetime.now()
+        if self.finish_dt <= now:
+            number_of_get = random.randint(1, 10)
+            Item.generate(self.type)
+
 
 class Battle(BaseModel):
     dt = ndb.DateTimeProperty(auto_now_add=True)  # request dt
@@ -204,3 +279,8 @@ class Battle(BaseModel):
     chars = ndb.KeyProperty(repeated=True)
     chars_alive = ndb.KeyProperty(repeated=True)
     room = ndb.KeyProperty()
+
+    def lose(self, pers):
+        self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.put()
+
