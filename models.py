@@ -45,6 +45,8 @@ PLANT_WEAPON = ITEM_HAND
 PLANT_BOTTLE = ITEM_DRINK
 DEFAULT_PLANT_DURATION = ITEM_DRINK
 
+
+# temp demo data
 ROOM_GRAPH = {
     u'Комнатка Самоубийсв': {'dirs': [u'Холл Безнадежности', u'Коридор Тлена'], 'desrc': u""},
     u'Прачечная Совести': {'dirs': [u'Холл Безнадежности', u'Коридор Тлена'], 'desrc': u""},
@@ -58,13 +60,15 @@ ITEM_NAMES = {ITEM_HEAD: [u'Шлем', u'Жуткий шлем'],
                 ITEM_BODY: [u'Доспех радости', u'Доспех дня'],
                 ITEM_HAND: [u'Дубинка радости', u'Букет', u'Вашь мечь'],
                 ITEM_DRINK: [u'Лечилка', u'Мега-лечилка'],
-                ITEM_SEED: [u'Семечко подсолнуха', u'Красивое семечко']}
+                ITEM_SEED: [u'Семечко подсолнуха', u'Красивое семечко'],
+                ITEM_MISC: [u'Интереснейший хлам', u'Эссенция бесполезности']}
 
 ITEM_ATTRS = {ITEM_HEAD: 'res_dmg',
                 ITEM_BODY: 'res_dmg',
                 ITEM_HAND: 'dmg',
                 ITEM_DRINK: 'hp',
-                ITEM_SEED: 'type'}
+                ITEM_SEED: 'type',
+                ITEM_MISC: 'type'}
 
 class BaseModel(ndb.Model):
     @classmethod
@@ -164,13 +168,11 @@ class Item(BaseModel):
 
     @classmethod
     def generate(self, item_type, char=None):
-        item_name = random.randint(1, len(ITEM_NAMES[item_type]))
-        new_item = Item()
-        new_item.name = item_name
-        new_item.type = item_type
-        special_attr = ITEM_ATTRS[type]
+        item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
+        new_item = Item(name=item_name, type=item_type)
+        special_attr = ITEM_ATTRS[item_type]
         new_item.attrs = {special_attr: 1}
-        if 'ега' in item_name:
+        if u'ега' in item_name:
             new_item.attrs = {special_attr: 3}
         new_item_id = new_item.put()
         new_item = new_item_id.get()
@@ -229,6 +231,15 @@ class Tour(BaseModel):
             char.room = random.choice(room_keys.values())
             char.put()
         # place items
+        items = []
+        for i in range(room_cnt * 2):
+            item = Item.generate(random.choice(ITEM_TYPES))
+            items.append(item)
+        rooms = [r.get() for r in room_keys.values()]
+        for i in items:
+            random.choice(rooms).items.append(i.key)
+        for room in rooms:
+            room.put()
 
 
 class Room(BaseModel):  # tournament session room
@@ -238,6 +249,9 @@ class Room(BaseModel):  # tournament session room
 
     def get_dirs(self):
         return [r.get() for r in self.dirs]
+
+    def get_items(self):
+        return [i.get() for i in self.items]
 
     def get_chars(self):
         return Char.query(Char.room == self)
