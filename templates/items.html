@@ -14,9 +14,10 @@
   	</div>
   	 <div class="row">
 	  	 <div class="col-xs-3">
-	  	 	<p>Одежда: {{ char.worns['head'] }}</p>
-	  	 	<p>{{ shmot.worns.body }}</p>
-	  	 	<p>{{ shmot.worns.hand }}</p>
+            Одежда:
+             {% for w in char.worns %}
+    	  	 	<p>{{ w.get().name }}</p>
+             {% endfor %}
 	  	 </div>
   	</div>
   	<!--INVENTORY-->

@@ -67,7 +67,7 @@ class JoinHandler(BaseHandler):
 class TourHandler(BaseHandler):
     def get(self):
         # list ofr tounaments
-        self.render('tour')
+        self.render('tour', {'tours': []})
 
     def post(self):
         # join or create tournament request
