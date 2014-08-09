@@ -25,7 +25,12 @@ DEFAULT_CHAR_ATTRS = {
     'hp_max': 10,
     'dmg': 1,
     'spd': 5,
-    'ap': 2
+    'ap': 2,
+    'str': 1,
+    'dex': 1,
+    'con': 1,
+    'int': 1,
+    'free_pts': 3
 }
 
 DEFAULT_SKILL_ATTRS = {
