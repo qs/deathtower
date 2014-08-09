@@ -8,18 +8,32 @@
 
     {% if tours_cnt > 0 %}
         <legend>Участвовать в турнире</legend>
-        {% for tour in tours %}
-            начнется: {{ tour.start_dt }}
-            участвуют:
-            {% for ch in tour.chars_obj %}
-                {{ ch.name }} [{{ ch.level }}]
+        <form class="form-horizontal" role="form" method="POST">
+            {% for tour in tours %}
+            <div class="radio" >
+              <label>
+                <input type="radio" name="tour_join_id" id="tour{{ tour.key.id() }}" value="{{ tour.key.id() }}"
+                  {% if char.level > tour.level_max or char.level < tour.level_min or char.tour %}disabled{% endif %}
+                >
+                начнется: {{ tour.start_dt }}
+                {% for ch in tour.chars_obj %}
+                    {{ ch.name }} [{{ ch.level }}]
+                {% endfor %}
+              </label>
+            </div>
             {% endfor %}
-            <br />
-        {% endfor %}
+          {% if not char.tour %}
+          <br />
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <input type="submit" id="tour_join" name="tour_add" class="btn btn-default" value="Присоединиться">
+            </div>
+          </div>
+          {% endif %}
+        </form>
     {% endif %}
 
     {% if not char.tour %}
-        <fieldset>
         <legend>Организовать новый турнир</legend>
         <form class="form-horizontal" role="form" method="POST">
           <div class="form-group">
@@ -44,11 +58,10 @@
           </div>
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <input type="submit" id="char_add" name="tour_add" class="btn btn-default" value="Создать">
+              <input type="submit" id="tour_add" name="tour_add" class="btn btn-default" value="Создать">
             </div>
           </div>
         </form>
-        </fieldset>
     {% endif %}
 
 </div>
