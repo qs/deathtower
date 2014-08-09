@@ -4,11 +4,19 @@
 
 
 {% block content %}
+Рассада:
+        {% for p in plants %}
+        {{p.name}}
+        {% endfor %}
 
-просмотр рассады
-полить
-сбор урожая
-посадить / выкорчевать растение
+Урожай:
+{%for p in already_items%}
+{{p.name}}
+{% endfor %}
 
+Посадить:
+{%for p in %}
+
+{% endfor %}
 
 {% endblock %}

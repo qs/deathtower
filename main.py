@@ -159,6 +159,7 @@ class BattleHandler(BaseHandler):
 
 class GardenHandler(BaseHandler):
     def get(self):
+
         # plants, fruits
         self.render('garden')
 
