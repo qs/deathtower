@@ -67,11 +67,19 @@ class JoinHandler(BaseHandler):
 class TourHandler(BaseHandler):
     def get(self):
         # list ofr tounaments
-        tours = Tour.get_tour_requests()
+        tours = Tour.get_avail_tour_requests(self.user.level)
         self.render('tour', {'tours': tours})
 
     def post(self):
         # join or create tournament request
+        if self.request.get('tour_add'):
+            # create nw tour
+            pass
+        elif self.request.get('tour_join'):
+            # join existing tour
+            tour_key = escape(self.request.get('tour_join_id'))
+            pass
+
         self.redirect('/tour/')
 
 

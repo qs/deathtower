@@ -35,8 +35,6 @@ DEFAULT_SKILL_ATTRS = {
 }
 
 DEFAULT_TOUR_ATTRS = {
-    'min_lvl': 0,
-    'max_lvl': 99,
 }
 
 
@@ -103,12 +101,16 @@ class Tour(BaseModel):
             default=TOUR_NEW,
             choices=[TOUR_NEW, TOUR_PROGRESS, TOUR_FINISHED])
     attrs = ndb.JsonProperty(default=DEFAULT_TOUR_ATTRS)
+    level_min = ndb.IntegerProperty(default=1)
+    level_max = ndb.IntegerProperty(default=99)
     chars = ndb.KeyProperty(repeated=True)
     chars_alive = ndb.KeyProperty(repeated=True)
 
     @classmethod
-    def get_tour_requests(cls):
-        tours = cls.query(cls.status==TOUR_NEW)
+    def get_avail_tour_requests(cls, level):
+        tours = cls.query(cls.status==TOUR_NEW, cls.level_min>level, cls.level_max<level)
+        for tour in tours:
+            tour.chars = [char.get() for char in tour.chars]
         return tours
 
 
