@@ -279,7 +279,7 @@ class Plant(BaseModel):
     def get_fruit(self):
         now = datetime.datetime.now()
         if self.finish_dt <= now:
-            new_item = Item.generate(self.type)
+            new_item = Item.generate(self.type, self.garden.char)
             self.delete()
             return new_item
 
