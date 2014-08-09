@@ -9,6 +9,14 @@ TOUR_FINISHED = 2
 BATTLE_PROGRESS = 1
 BATTLE_FINISHED = 2
 
+ITEM_MISC = 0  # mock item, nothing to do with this just drop
+ITEM_HAND = 1  # can put on hand (weapon)
+ITEM_BODY = 2  # can wear on body (armor)
+ITEM_HEAD = 3  # can wear on head (helmet)
+ITEM_DRINK = 4  # can use for effect
+
+ITEM_TYPES = [ITEM_MISC, ITEM_HAND, ITEM_BODY, ITEM_HEAD, ITEM_DRINK]
+
 DEFAULT_CHARACTER_ATTRS = {
     'hp': 100,
     'hp_max': 100,
@@ -36,8 +44,12 @@ class Char(BaseModel):
     items = ndb.KeyProperty(repeated=True)
     action_timeout = ndb.DateTimeProperty(auto_now_add=True)  # can't do anything if this > dt.now()
 
+
 class Item(BaseModel):
     name = ndb.StringProperty(required=True)
+    type = ndb.IntegerProperty(required=True,
+            default=ITEM_MISC,
+            choices=ITEM_TYPES)
     attrs = ndb.JsonProperty(default=[])
 
 
