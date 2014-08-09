@@ -107,8 +107,11 @@ class TourHandler(BaseHandler):
 
 class RoomHandler(BaseHandler):
     def get(self):
-        room = self.char.room.get()
-        self.render('room', {'room': room})
+        if self.char.room:
+            room = self.char.room.get()
+            self.render('room', {'room': room})
+        else:
+            self.redirect('/tour/')
 
     def post(self):
         if self.request.get('room_move'):
