@@ -57,32 +57,32 @@ class WelcomeHandler(BaseHandler):
     def get(self):
         # promo page
         self.render('welcome')
-            # promo page
-            if self.request.cookies.get("username_id"):
-                   self.write("""
-                   Welcome back!  <button onClick="location.href='/logout'">logout</button>
-                   """)
-            else:
-                   self.write(
-                          """
-                          <!DOCTYPE html>
-                          <html>
-                          <head>
-                              <title>Welcome!</title>
-                              <link rel="stylesheet" type="text/css" href="/static/signup.css"/>
-                          </head>
-                          <body>
-                             <button onClick="location.href='/login'">Login</button>
-                             <button onClick="location.href='/signup'">Signup</button>
-                          </body>
-                          </html>
-                          """
-                   )
+        # promo page
+        if self.request.cookies.get("username_id"):
+            self.write("""
+            Welcome back!  <button onClick="location.href='/logout'">logout</button>
+            """)
+        else:
+            self.write(
+                  """
+                  <!DOCTYPE html>
+                  <html>
+                  <head>
+                      <title>Welcome!</title>
+                      <link rel="stylesheet" type="text/css" href="/static/signup.css"/>
+                  </head>
+                  <body>
+                     <button onClick="location.href='/login'">Login</button>
+                     <button onClick="location.href='/signup'">Signup</button>
+                  </body>
+                  </html>
+                  """
+            )
 
 class Signup(BaseHandler):
     def get(self):
         if self.request.cookies.get("username_id"):
-               self.redirect('/')
+           self.redirect('/')
         self.render('signup')
     
     def post(self):
@@ -99,8 +99,8 @@ class Signup(BaseHandler):
             error_code = True
         else:
             if username in accounts:
-                    params['username_error'] = "Username is taken."
-                    error_code = True
+                params['username_error'] = "Username is taken."
+                error_code = True
         if not valid_password(password):
             params['password_error'] = "That's not a valid password."
             error_code = True
