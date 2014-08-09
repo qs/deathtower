@@ -63,7 +63,8 @@ class TourHandler(BaseHandler):
             # temp check if time to start tournament
             tour = self.char.tour.get()
             tour.upd_chars()
-            if tour and tour.start_dt >= datetime.now():
+            if tour and tour.start_dt <= datetime.now():
+                print tour.start_dt, datetime.now()
                 tour.start_tour() # place rooms, items, chars, update status
                 self.redirect('/room/')
             # not showing list if char already choose tour
@@ -106,8 +107,8 @@ class TourHandler(BaseHandler):
 
 class RoomHandler(BaseHandler):
     def get(self):
-        # room screen
-        self.render('room')
+        room = self.char.room.get()
+        self.render('room', {'room': room})
 
     def post(self):
         # move to another room, attack person or pickiu item

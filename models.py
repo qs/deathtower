@@ -40,7 +40,7 @@ DEFAULT_TOUR_ATTRS = {
 
 
 ROOM_GRAPH = {
-    u'Комнатка Самоубийсв': {'dirs': [u'Холл Безнадежности', u''], 'desrc': u""},
+    u'Комнатка Самоубийсв': {'dirs': [u'Холл Безнадежности', u'Коридор Тлена'], 'desrc': u""},
     u'Прачечная Совести': {'dirs': [u'Холл Безнадежности', u'Коридор Тлена'], 'desrc': u""},
     u'Коридор Тлена': {'dirs': [u'Прачечная Совести', u'Столовая Безжизненности'], 'desrc': u'Кабинет Сожалений'},
     u'Холл Безнадежности': {'dirs': [u'Комнатка Самоубийсв', u'Кабинет Сожалений'], 'desrc': u""},
@@ -74,6 +74,7 @@ class Char(BaseModel):
     tour = ndb.KeyProperty()  # Tour key, where char take place
     skills = ndb.KeyProperty(repeated=True)  # list of Skill
     effects = ndb.KeyProperty(repeated=True)  # list of CharEffect
+    room = ndb.KeyProperty()  # Room in tournament
 
     @classmethod
     def get_char_by_user(cls, user):
@@ -167,12 +168,17 @@ class Tour(BaseModel):
                 room = Room(name=room_name)
                 room_key = room.put()
                 room_keys[room_name] = room_key
-            for room_name, room_data in ROOM_GRAPH.items():
-                room = Room.query(Room.name==room_name)
-                room.dirs = [room_keys[r] for r in room_data['dirs']]
-                room.put()
+        else:
+            room_keys = dict([(r.name, r.key) for r in q])
+        for room_name, room_data in ROOM_GRAPH.items():
+            room = Room.query(Room.name==room_name).get()
+            room.dirs = [room_keys[r] for r in room_data['dirs']]
+            room.put()
         # place chars
-
+        for ch in self.chars:
+            char = ch.get()
+            char.room = random.choice(room_keys.values())
+            char.put()
         # place items
 
 
@@ -180,7 +186,6 @@ class Room(BaseModel):  # tournament session room
     name = ndb.StringProperty(required=True)
     items = ndb.KeyProperty(repeated=True) # list of Item
     dirs = ndb.KeyProperty(repeated=True)  # keys of rooms to go
-    chars = ndb.KeyProperty(repeated=True)  # list of Char
 
 
 class Garden(BaseModel):  # tournament session room
