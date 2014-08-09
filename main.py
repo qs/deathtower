@@ -85,9 +85,11 @@ class TourHandler(BaseHandler):
             self.char.put()
         elif self.request.get('tour_join'):
             # join existing tour
-            tour_key = ndb.Key(Tour, escape(self.request.get('tour_join_id')))
-            self.char.tour = tour_key
+            tour = Tour.getone(int(escape(self.request.get('tour_join_id'))))
+            self.char.tour = tour.key
             self.char.put()
+            tour.chars.append(self.char.key)
+            tour.put()
         self.redirect('/tour/')
 
 
