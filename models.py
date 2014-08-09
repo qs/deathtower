@@ -127,6 +127,7 @@ class Char(BaseModel):
         self.battle = None
         self.tour = None
         self.room = None
+        self.items = [i for i in self.items if i.item_type == ITEM_SEED]
         self.put()
 
     def acc_dmg(self, dmg, is_crit):
