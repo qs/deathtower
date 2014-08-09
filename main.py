@@ -25,11 +25,7 @@ class BaseHandler(webapp2.RequestHandler):
     def __init__(self, request, response):
         self.initialize(request, response)
         self.user = users.get_current_user()
-        self.char = self.get_current_char() if self.user else None
-
-    def get_current_char(self):
-        # returns character object
-        return None
+        self.char = Char.get_char_by_user(self.user) if self.user else None
 
     def render(self, tpl_file, tvals={}):
         tvals['logout'] = users.create_logout_url("/")
@@ -64,7 +60,21 @@ class WelcomeHandler(BaseHandler):
                    Welcome back!  <button onClick="location.href='/logout'">logout</button>
                    """)
             else:
-                   self.render('welcome2')
+                   self.write(
+                          """
+                          <!DOCTYPE html>
+                          <html>
+                          <head>
+                              <title>Welcome!</title>
+                              <link rel="stylesheet" type="text/css" href="/static/signup.css"/>
+                          </head>
+                          <body>
+                             <button onClick="location.href='/login'">Login</button>
+                             <button onClick="location.href='/signup'">Signup</button>
+                          </body>
+                          </html>
+                          """
+                   )
 
 class Signup(BaseHandler):
     def get(self):
@@ -139,6 +149,8 @@ class Logout(BaseHandler):
 
 class JoinHandler(BaseHandler):
     def get(self):
+            if self.char:
+                self.redirect('/tour/')
             # check if char exists, character creation screen
             self.render('join')
 
@@ -211,7 +223,6 @@ class GardenHandler(BaseHandler):
     def post(self):
             # watering plants, puck up fruits, remove plant
             self.redirect('/garden/')
-
 
 
 app = webapp2.WSGIApplication([
