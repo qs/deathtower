@@ -6,16 +6,8 @@ import jinja2
 import os
 import json
 from cgi import escape
-from google.appengine.api import users
 from models import *
-import re
-import time
-import datetime
-import google.appengine.ext.db
-from google.appengine.ext import db
-from google.appengine.api import memcache
-from util import *
-from util_db import *
+from datetime import datetime, timedelta
 from google.appengine.api import users
 
 
@@ -66,20 +58,36 @@ class JoinHandler(BaseHandler):
 
 class TourHandler(BaseHandler):
     def get(self):
-        # list ofr tounaments
-        tours = Tour.get_avail_tour_requests(self.user.level)
-        self.render('tour', {'tours': tours})
+        # list for tounaments
+        tours_cnt, tours = Tour.get_tour_requests()
+        self.render('tour', {'tours': tours, 'tours_cnt': tours_cnt})
 
     def post(self):
         # join or create tournament request
         if self.request.get('tour_add'):
-            # create nw tour
-            pass
+            # create new tour
+            tour_lvl = int(escape(self.request.get('tour_level')))
+            if tour_lvl == 0:
+                level_min = 1
+                level_max = 99
+            elif tour_lvl == 1:
+                level_min = self.char.level - 1
+                level_max = self.char.level + 1
+            else:
+                level_min = self.char.level
+                level_max = self.char.level
+            tour_start = int(escape(self.request.get('tour_start')))
+            start_dt = datetime.now() + timedelta(minutes=tour_start)
+            tour = Tour(level_min=level_min, level_max=level_max,
+                        chars=[self.char.key, ], start_dt=start_dt)
+            tour_key = tour.put()
+            self.char.tour = tour_key
+            self.char.put()
         elif self.request.get('tour_join'):
             # join existing tour
-            tour_key = escape(self.request.get('tour_join_id'))
-            pass
-
+            tour_key = ndb.Key(Tour, escape(self.request.get('tour_join_id')))
+            self.char.tour = tour_key
+            self.char.put()
         self.redirect('/tour/')
 
 

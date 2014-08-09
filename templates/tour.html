@@ -6,12 +6,12 @@
 {% block content %}
 <div class="row">
 
-    {% if tour|length > 0 %}
+    {% if tours_cnt > 0 %}
         <legend>Участвовать в турнире</legend>
         {% for tour in tours %}
             начнется: {{ tour.start_dt }}
             участвуют:
-            {% for ch in tour.chars %}
+            {% for ch in tour.chars_obj %}
                 {{ ch.name }} [{{ ch.level }}]
             {% endfor %}
             <br />
@@ -35,7 +35,7 @@
           <div class="form-group">
             <label for="tour_start" class="col-sm-2 control-label">Начало через:</label>
             <div class="col-xs-4">
-                <select class="form-control" name="tour_level" id="tour_start">
+                <select class="form-control" name="tour_start" id="tour_start">
                   <option selected value="0">3 минуты</option>
                   <option>5 минут</option>
                   <option>10 минут</option>
@@ -51,18 +51,5 @@
         </fieldset>
     {% endif %}
 
-    <table class="table">
-        {% for tour in tours %}
-            <tr><td>{{ tour.start_dt }}</td>
-                {% if not user.tour %}
-                <td><button type="button" class="btn"><span class="glyphicon glyphicon-ok"></span></button></td>
-                {% endif %}
-            </tr>
-        {% endfor %}
-    </table>
-    <button type="button" class="btn">Создать</button>
-    {% if not tours %}
-    <button type="button" class="btn">Создать</button>
-    {% endif %}
 </div>
 {% endblock %}

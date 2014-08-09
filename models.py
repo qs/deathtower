@@ -107,11 +107,13 @@ class Tour(BaseModel):
     chars_alive = ndb.KeyProperty(repeated=True)
 
     @classmethod
-    def get_avail_tour_requests(cls, level):
-        tours = cls.query(cls.status==TOUR_NEW, cls.level_min>level, cls.level_max<level)
+    def get_tour_requests(cls):
+        q = cls.query(cls.status==TOUR_NEW)
+        cnt = q.count()
+        tours = q.order(Tour.start_dt)
         for tour in tours:
-            tour.chars = [char.get() for char in tour.chars]
-        return tours
+            tour.chars_obj = [ch.get() for ch in tour.chars]
+        return cnt, tours
 
 
 class Room(BaseModel):  # tournament session room
