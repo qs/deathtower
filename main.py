@@ -111,6 +111,12 @@ class RoomHandler(BaseHandler):
         self.render('room', {'room': room})
 
     def post(self):
+        if self.request.get('room_move'):
+            room_move = Room.getone(int(escape(self.request.get('room_move_id'))))
+            room = self.char.room.get()
+            if room_move.key in room.dirs:
+                self.char.room = room_move.key
+                self.char.put()
         # move to another room, attack person or pickiu item
         self.redirect('/room/')
 
