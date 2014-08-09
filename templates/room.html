@@ -29,7 +29,7 @@
     {% for c in room.get_chars() %}
     <div class="radio" >
       <label>
-        <input type="radio" name="room_move_id" id="char{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
+        <input type="radio" name="room_fight_id" id="char{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
           {{ c.name }}
       </label>
     </div>

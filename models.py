@@ -303,3 +303,8 @@ class Battle(BaseModel):
         self.chars_alive = [c for c in self.chars_alive if c != pers]
         self.put()
 
+    @classmethod
+    def generate_new(self, chars, room):
+        battle = Battle({'chars': chars, 'chars_alive': chars, 'room': room})
+        battle.put()
+        return battle.key.get()
