@@ -14,5 +14,7 @@
             </tr>
         {% endfor %}
     </table>
+    {% if not tours %}
+    <button type="button" class="btn">Создать</button>
     </div>
 {% endblock %}
