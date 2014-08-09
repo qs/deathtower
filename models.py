@@ -213,7 +213,8 @@ class Tour(BaseModel):
         self.put()
         # create rooms if nessesary
         q = Room.query()
-        if q.count() == 0:
+        room_cnt = q.count()
+        if room_cnt == 0:
             room_keys = {}
             for room_name in ROOM_GRAPH.keys():
                 room = Room(name=room_name)
