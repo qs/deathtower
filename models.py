@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
+import random
 from google.appengine.ext import ndb
 
 TOUR_NEW = 0
@@ -79,15 +80,41 @@ class Char(BaseModel):
         char = cls.query(cls.user==user).get()
         return char
 
+    def get_add_patk(self):
+        dmg = 0
+        for e in self.effects:
+            dmg += e.attrs.get('patk')
+        for w in self.worns:
+            if w.type == 'item_hand':
+                dmg += w.attrs.get('dmg')
+        return dmg
+
+    def fight(self, target):
+        dmg = 1 + self.stats['STR'] / 2 + self.get_add_patk()
+        is_crit = True if random.randint(1, 100) in range(1, 5 * (self.stats['DEX'] / 2) + 1) else False
+        target.acc_dmg(-dmg, is_crit)
+
+    def acc_dmg(self, dmg, is_crit):
+        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.stats['DEX'] / 2) + 1) else False
+        mod = 2 if is_crit and not me_crit else 1
+        mod = 0.5 if me_crit and not is_crit else mod
+        self.hp += -int(dmg * mod)
+
 
 class CharEffect():
     effect = ndb.KeyProperty(required=True)
     finish_turn = ndb.IntegerProperty(required=True, default=1)
 
+    def check_effect(self):
+        if self.battle.current_turn >= self.finish_turn:
+            self.disable_effect()
+
+    def disable_effect(self):
+        self.key.delete()
 
 class Effect():
     name = ndb.StringProperty(required=True)
-    attrs = ndb.JsonProperty(default=[])
+    attrs = ndb.JsonProperty(default=[])#here 'type':'bad' or 'good'
 
 
 class Skill():
