@@ -265,8 +265,9 @@ class Plant(BaseModel):
     def get_fruit(self):
         now = datetime.datetime.now()
         if self.finish_dt <= now:
-            number_of_get = random.randint(1, 10)
-            Item.generate(self.type)
+            new_item = Item.generate(self.type)
+            self.delete()
+            return new_item
 
 
 class Battle(BaseModel):
