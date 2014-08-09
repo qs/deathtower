@@ -42,6 +42,7 @@ class Char(BaseModel):
     name = ndb.StringProperty(required=True)
     attrs = ndb.JsonProperty(default=DEFAULT_CHARACTER_ATTRS)
     items = ndb.KeyProperty(repeated=True)
+    worns = ndb.KeyProperty(repeated=True)
     action_timeout = ndb.DateTimeProperty(auto_now_add=True)  # can't do anything if this > dt.now()
 
 
