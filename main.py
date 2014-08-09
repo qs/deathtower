@@ -1,25 +1,75 @@
 #!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-import webapp2
+# coding:utf-8
 
-class MainHandler(webapp2.RequestHandler):
+import webapp2
+import jinja2
+import os
+import re
+import json
+from cgi import escape
+from google.appengine.api import users
+from models import *
+
+
+jinja_environment = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+
+
+class BaseHandler(webapp2.RequestHandler):
+    def __init__(self, request, response):
+        self.initialize(request, response)
+        self.user = users.get_current_user()
+        self.char = self.get_current_char() if self.user else None
+
+    def get_current_char(self):
+        # returns character object
+        return None
+
+    def render(self, tpl_file, tvals={}):
+        tvals['logout'] = users.create_logout_url("/")
+        tvals['char'] = self.char
+        tpl = jinja_environment.get_template('templates/' + tpl_file + '.html')
+        self.response.out.write(tpl.render(tvals))
+
+    def render_json(self, data):
+        self.response.out.write(json.dumps(data))
+
+
+class WelcomeHandler(BaseHandler):
     def get(self):
-        self.response.write('Hello world!')
+            pass
+            #self.render('welcome')
+
+
+class WelcomeHandler(BaseHandler):
+    def get(self):
+            # promo page
+            self.render('welcome')
+
+
+class JoinHandler(BaseHandler):
+    def get(self):
+            # character creation screen
+            self.render('join')
+
+    def post(self):
+            # create character
+            self.redirect('/tour/')
+
+
+
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    # auth
+    ('/', WelcomeHandler),  # welcome promo-page avaliable without login
+    ('/join/', JoinHandler), # if there is not character
+    # tournmanet
+    ('/tour/', TourHandler), # requests for tournaments
+    ('/room/', RoomHandler), # location in tournament
+    ('/final/', FinalHandler), # stats after finishing tounrament
+    # character stats and items
+    ('/char/', CharHandler), # stats editing
+    ('/items/', ItemsHandler), # inventory
+
+    ('/battle/', BattleHandler), # evething for battles
 ], debug=True)
