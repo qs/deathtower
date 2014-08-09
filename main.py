@@ -59,7 +59,18 @@ class JoinHandler(BaseHandler):
 class TourHandler(BaseHandler):
     def get(self):
         # list for tounaments
-        tours_cnt, tours = Tour.get_tour_requests()
+        if self.char.tour:
+            # temp check if time to start tournament
+            tour = self.char.tour.get()
+            if tour.start_dt >= datetime.now():
+                tour.status = TOUR_PROGRESS
+                tour.put()
+                tour.start_tour() # place rooms, items, chars
+            # not showing list if char already choose tour
+            tours_cnt = 1
+            tours = [tour, ]
+        else:
+            tours_cnt, tours = Tour.get_tour_requests()
         self.render('tour', {'tours': tours, 'tours_cnt': tours_cnt})
 
     def post(self):
