@@ -40,114 +40,10 @@ class BaseHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
-class MainHandler(webapp2.RequestHandler):
-    def get(self):
-        user = users.get_current_user()
-        if user:
-            msg = ("Welcome, %s! (<a href=\"%s\">sign out</a>)" %
-                   (user.nickname(), users.create_logout_url("/")))
-        else:
-            msg = ("<form action=\"%s\">"
-                   "<input type=\"submit\" value=\"Login to Google\">"
-                   "</form>" %
-                   users.create_login_url("/"))
-        self.response.out.write("<html><body>%s</body></html>" % msg)
 
 class WelcomeHandler(BaseHandler):
     def get(self):
-        # promo page
         self.render('welcome')
-            # promo page
-            if self.request.cookies.get("username_id"):
-                   self.write("""
-                   Welcome back!  <button onClick="location.href='/logout'">logout</button>
-                   """)
-            else:
-                   self.write(
-                          """
-                          <!DOCTYPE html>
-                          <html>
-                          <head>
-                              <title>Welcome!</title>
-                              <link rel="stylesheet" type="text/css" href="/static/signup.css"/>
-                          </head>
-                          <body>
-                             <button onClick="location.href='/login'">Login</button>
-                             <button onClick="location.href='/signup'">Signup</button>
-                          </body>
-                          </html>
-                          """
-                   )
-
-class Signup(BaseHandler):
-    def get(self):
-        if self.request.cookies.get("username_id"):
-               self.redirect('/')
-        self.render('signup')
-    
-    def post(self):
-        username = self.request.get('username')
-        password = self.request.get('password')
-        verify = self.request.get('verify')
-        email = self.request.get('email')
-        params = dict(username = username, email = email)
-        error_code = False
-        accounts = [u.username for u in list(db.GqlQuery("SELECT username FROM Users"))]
-        
-        if not valid_username(username):
-            params['username_error'] = "That's not a valid username."
-            error_code = True
-        else:
-            if username in accounts:
-                    params['username_error'] = "Username is taken."
-                    error_code = True
-        if not valid_password(password):
-            params['password_error'] = "That's not a valid password."
-            error_code = True
-        if not password==verify:
-            params['verify_error'] = "Password didn't match"
-            error_code = True
-        if not valid_email(email):
-            params['email_error'] = "That's not a valid e-mail"
-            error_code = True
-        
-        if error_code:
-            self.render('signup', params)
-        else:
-            account = Users(username = username, password = make_secure_pw(password), email = email)
-            account.put()
-            account_id = account.key().id()
-            cookie_val = make_secure_val(str(account_id))
-            self.response.headers.add_header("Set-Cookie", "username_id=%s; Path=/" % str(cookie_val))
-            self.redirect('/')
-
-class Login(BaseHandler):
-    def get(self):
-        self.render('login')
-        
-    def post(self):
-        username = self.request.get('username')
-        pw = self.request.get('password')
-        url = self.request.get('url')
-        
-        account = db.GqlQuery("SELECT * FROM Users WHERE username = :1", username).get()
-        
-        if not account:
-            self.render('login', {'error': 'Invalid pair'})
-        else:
-            pw_hash = account.password
-            if check_secure_pw(pw, pw_hash):
-                account_id = account.key().id()
-                cookie_val = make_secure_val(str(account_id))
-                self.response.headers.add_header("Set-Cookie", "username_id=%s; Path=/" % str(cookie_val))
-                self.redirect('/')
-            else:
-                self.render('login', {'error': 'Invalid pair'})
-        
-class Logout(BaseHandler):
-    def get(self):
-        self.response.headers["Set-Cookie"] = "username_id=; Path=/"
-        self.redirect('/')
 
 
 class JoinHandler(BaseHandler):
@@ -237,9 +133,6 @@ class GardenHandler(BaseHandler):
 app = webapp2.WSGIApplication([
     # auth
     ('/', WelcomeHandler),  # welcome promo-page avaliable without login
-    ('/login\/?', Login), #login
-    ('/logout', Logout), #signup
-    ('/signup\/?', Signup),
     ('/join/', JoinHandler), # if there is not character
     # tournmanet
     ('/tour/', TourHandler), # requests for tournaments
