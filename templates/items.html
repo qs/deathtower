@@ -34,7 +34,7 @@
     <div class="radio" >
       <label>
         <input type="radio" name="room_item_id" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
-          {% if  %}<span class="glyphicon glyphicon-leaf"></span>{{ i.name }}
+          {% if i.type == 5 %}<span class="glyphicon glyphicon-leaf"></span> {% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}{{ i.name }}
       </label>
     </div>
     {% endif %}
