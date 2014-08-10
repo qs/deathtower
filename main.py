@@ -232,7 +232,7 @@ class GardenHandler(BaseHandler):
             self.redirect('/garden/')
         garden = self.char.garden
         plants, already_items = garden.get_visited()
-        seeds = [i for i in self.char.items if i.get().type == ITEM_SEED]
+        seeds = [i for i in self.char.items if i.get() and i.get().type == ITEM_SEED]
         # plants, fruits
         self.render('garden', {'plants': plants, 'already_items': already_items, 'seeds': seeds})
 

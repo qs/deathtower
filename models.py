@@ -137,6 +137,7 @@ class Char(BaseModel):
         mod = 2 if is_crit and not me_crit else 1
         mod = 0.5 if me_crit and not is_crit else mod
         self.attrs['hp'] += -int(dmg * mod)
+        self.put()
         if self.attrs['hp'] <= 0:
             self.lose()
 
@@ -214,6 +215,7 @@ class Item(BaseModel):
         if char:
             char = char.get()
             char.items = char.items + [new_item.key,]
+            char.put()
         return new_item
 
 class Tour(BaseModel):
@@ -349,7 +351,8 @@ class Plant(BaseModel):
         now = datetime.datetime.now()
         if self.finish_dt <= now:
             new_item = Item.generate(self.type, self.garden.char)
-            self.delete()
+            new_item.put()
+            self.key.delete()
             return new_item
 
 

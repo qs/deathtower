@@ -5,13 +5,12 @@
 
 {% block content %}
 <div class="row">
-  	<button type="button" class="btn"><span class="glyphicon glyphicon-move"></span></button><button type="button" class="btn"><span class="glyphicon glyphicon-envelope"></button>
   	<div class="row">
-  		<div class="col-xs-1 label label-danger">HP {{ char.attrs['hp'] }}</div>
-  		<div class="col-xs-1 label label-primary">MP {{ char.attrs['mp'] }}</div>
+  		<div class="col-xs-1 label label-danger">HP {{ char.attrs['hp'] }}/{{ char.attrs['hp_max'] }}</div>
   		<div class="col-xs-1 label label-warning">AP {{ char.attrs['ap'] }}</div>
-  		{{ char.name }}
+  		<h3>{{ char.name }}</h3>
   	</div>
+    {% if char.worns%}
   	 <div class="row">
 	  	 <div class="col-xs-3">
             Одежда:
@@ -20,36 +19,16 @@
              {% endfor %}
 	  	 </div>
   	</div>
+    {% endif %}
   	<!--INVENTORY-->
   	<div class="row">
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-</div>
+        {% for i in char.items %}
+<div class="col-xs-1"><span class="glyphicon glyphicon-{% if i.type == 0 or i.type == 2 or i.type == 3%}star{%elif i.type == 1%}screenshot{%elif i.type == 4%}glass{%elif i.type == 5%}leaf{%endif%}"></span></div>
+        {% if not loop.index is not divisibleby(8) %}
+        </div>
 <div class="row">
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-</div>
-<div class="row">
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
-  <div class="col-xs-1"><span class="glyphicon glyphicon-star"></span></div>
+    {% endif%}
+  {% endfor %}
 </div>
     </div>
 
