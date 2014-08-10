@@ -158,6 +158,9 @@ class Char(BaseModel):
     def get_items(self):
         return [i.get() for i in self.items]
 
+    def get_worns(self):
+        return [i.get() for i in self.worns]
+
     def pick_up_item(self, item_key):
         room = self.room.get()
         print item_key, room.items
@@ -177,6 +180,28 @@ class Char(BaseModel):
         self.put()
         room.items.append(item_key)
         room.put()
+        return True
+
+    def puton_item(self, item_key):
+        item = item_key.get()
+        if item.type in [ITEM_MISC, ITEM_DRINK, ITEM_SEED]:
+            return False
+        if item_key not in self.items:
+            return False  # no item in inventory
+        witems = [i for i in self.get_worns() if i.type == item.type]
+        if len(witems) > 0:
+            self.worns.remove(witems[0].key)
+            self.items.append(witems[0].key)
+        self.worns.append(item_key)
+        self.items.remove(item_key)
+        self.put()
+
+    def takeoff_item(self, item_key):
+        if item_key not in self.worns:
+            return False  # no item on person
+        self.worns.remove(item_key)
+        self.items.append(item_key)
+        self.put()
         return True
 
     @property

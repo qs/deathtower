@@ -180,20 +180,25 @@ class ItemsHandler(BaseHandler):
         self.render('items', {'items': items})
 
     def post(self):
+        # use item, put on, take off item, drop down
         if self.request.get('item_drop'):
-            item = Item.getone(int(escape(self.request.get('room_item_id'))))
+            item = Item.getone(int(escape(self.request.get('item_id'))))
             char = self.char
-            room = self.char.room
+            room = self.char.room.get()
             if room:
-                room.items += [item, ]
+                room.items += [item.key, ]
                 room.put()
             for i in xrange(0, len(char.items)):
                 if char.items[i] == item.key:
                     char.items.pop(i)
                     char.put()
                     break
-
-        # use item, put on, take off item, drop down
+        elif self.request.get('item_puton'):
+            item = Item.getone(int(escape(self.request.get('item_id'))))
+            self.char.puton_item(item.key)
+        elif self.request.get('item_takeoff'):
+            item = Item.getone(int(escape(self.request.get('worn_id'))))
+            self.char.takeoff_item(item.key)
         self.redirect('/items/')
 
 

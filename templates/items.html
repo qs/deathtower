@@ -17,12 +17,47 @@
     {% endif %}
   	<!--INVENTORY-->
 
-<form class="form-horizontal" id="item_drop" role="form" method="POST">
+
+<form class="form-horizontal" id="item_worn_form" role="form" method="POST">
+    {% for i in char.get_worns() %}
+    {% if i%}
+    <div class="radio" >
+      <label>
+        <input type="radio" name="worn_id" id="worn{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
+        <img {% if i.name == 'Семечко подсолнуха' %}src="/static/pics/SEED_podsolnuha.bmp" width="16" height="16"
+          {% elif i.type == 5 %} src="/static/pics/SEED_nice.bmp" width="16" height="16"
+          {% elif i.name == 'Лечилка' %}src="/static/pics/DRINK_heal_small.bmp" width="20" height="20"
+          {% elif i.name == 'Мега-лечилка' %}src="/static/pics/DRINK_heal_big.bmp" width="20" height="17"
+          {% elif i.name == 'Эссенция бесполезности' %}src="/static/pics/DRINK.bmp" width="16" height="16"
+          {% elif i.name == 'Интереснейший хлам' %}src="/static/pics/MISC_hlam.bmp" width="16" height="13"
+          {% elif i.name == 'Дубинка радости' %}src="/static/pics/HAND_happy.bmp" width="10" height="29"
+          {% elif i.name == 'Меч' %}src="/static/pics/HAND_sword.bmp" width="10" height="29"
+          {% else %} src=''{% endif %}/>
+          {{ i.name }}
+       ( {% if i.type == 1 %} в руках
+        {% elif i.type == 2 %} на теле
+        {% elif i.type == 3 %} на голове
+        {% endif %}
+       ) </label>
+    </div>
+    {% endif %}
+    {% endfor %}
+  <br />
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" id="item_takeoff" name="item_takeoff" class="btn btn-default" value="Снять">
+    </div>
+  </div>
+</form>
+
+
+<hr />
+<form class="form-horizontal" id="item_drop_form" role="form" method="POST">
     {% for i in items %}
     {% if i%}
     <div class="radio" >
       <label>
-        <input type="radio" name="room_item_id" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
+        <input type="radio" name="item_id" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
         <img {% if i.name == 'Семечко подсолнуха' %}src="/static/pics/SEED_podsolnuha.bmp" width="16" height="16"
           {% elif i.type == 5 %} src="/static/pics/SEED_nice.bmp" width="16" height="16"
           {% elif i.name == 'Лечилка' %}src="/static/pics/DRINK_heal_small.bmp" width="20" height="20"
