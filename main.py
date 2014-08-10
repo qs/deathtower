@@ -108,6 +108,7 @@ class TourHandler(BaseHandler):
             self.char.tour = tour.key
             self.char.put()
             tour.chars.append(self.char.key)
+            tour.chars_alive = tour.chars
             tour.put()
         self.redirect('/tour/')
 
