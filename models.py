@@ -371,6 +371,10 @@ class Battle(BaseModel):
 
     def lose(self, pers):
         self.chars_alive = [c for c in self.chars_alive if c != pers]
+        if len(self.chars_alive) <= 1:
+            winner = self.chars_alive[0]
+            winner.battle = None
+            winner.put()
         self.put()
 
     @classmethod
