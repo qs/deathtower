@@ -389,11 +389,12 @@ class Battle(BaseModel):
         chars = sorted([ch.get() for ch in self.chars_alive], key=lambda x: x.attrs['spd'], reverse=True)
         turn_actions = self.turn_actions
         for ch in chars:
-            acts = turn_actions.pop(unicode(ch.key.id()))
-            for a in acts:
-                skill = Skill.getone(int(a['skill']))
-                target = Char.getone(int(a['aim']))
-                ch.fight(target, skill)
-        self.current_turn += 1
-        self.turn_actions = {}
-        self.put()
+            if unicode(ch.key.id()) in turn_actions:
+                acts = turn_actions.pop(unicode(ch.key.id()))
+                for a in acts:
+                    skill = Skill.getone(int(a['skill']))
+                    target = Char.getone(int(a['aim']))
+                    ch.fight(target, skill)
+            self.current_turn += 1
+            self.turn_actions = {}
+            self.put()
