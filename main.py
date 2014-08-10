@@ -244,8 +244,9 @@ class BattleHandler(BaseHandler):
     def post(self):
         # char if everyone compose turn compute turns
         if self.request.get('turn_action'):
-            battle = self.char.battle.get()
-            if self.char.battle_turn == battle.current_turn:
+            battle = self.char.battle
+            if battle and self.char.battle_turn == battle.current_turn:
+                battle = battle.get()
                 # compute valid turn
                 turn_actions = json.loads(self.request.get('turn_actions'))
                 print turn_actions
