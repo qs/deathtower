@@ -121,7 +121,7 @@ class Char(BaseModel):
     def fight(self, target, skill):
         dmg = 1 + self.attrs['str'] / 2 + self.get_add_patk()
         is_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
-        target.acc_dmg(-dmg, is_crit)
+        target.acc_dmg(dmg, is_crit)
 
     def lose(self):
         self.battle.lose(self)
@@ -136,7 +136,7 @@ class Char(BaseModel):
         me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
         mod = 2 if is_crit and not me_crit else 1
         mod = 0.5 if me_crit and not is_crit else mod
-        self.attrs['hp'] += -int(dmg * mod)
+        self.attrs['hp'] -= int(dmg * mod)
         self.put()
         if self.attrs['hp'] <= 0:
             self.lose()
