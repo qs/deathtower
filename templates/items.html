@@ -34,7 +34,7 @@
     <div class="radio" >
       <label>
         <input type="radio" name="room_item_id" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
-          {{ i.name }}
+          {% if  %}<span class="glyphicon glyphicon-leaf"></span>{{ i.name }}
       </label>
     </div>
     {% endif %}
@@ -42,8 +42,8 @@
   <br />
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" id="item_drop" name="item_drop" class="btn btn-default" value="Выкинуть">
-      <input type="submit" id="item_puton" name="item_puton" class="btn btn-default" value="Надеть">
+      <button type="submit" id="item_drop" name="item_drop" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span>Выбросить</button>
+      <button type="submit" id="item_puton" name="item_puton" class="btn btn-default"><span class="glyphicon glyphicon-user"></span>Надеть</button>
     </div>
   </div>
 </form>
