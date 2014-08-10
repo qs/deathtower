@@ -9,7 +9,7 @@ from cgi import escape
 from models import *
 from datetime import datetime, timedelta
 from google.appengine.api import users
-
+import json
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -49,7 +49,14 @@ class JoinHandler(BaseHandler):
         # create character
         if self.request.get('char_add'):
             name = escape(self.request.get('char_name'))
-            char = Char(user=self.user, name=name)
+            kick_skill = Skill.query(Skill.name==u"Двинуть").get()
+            if not kick_skill:
+                kick_skill = Skill(name=u"Двинуть")
+                kick_skill_key = kick_skill.put()
+            else:
+                kick_skill = kick_skill
+                kick_skill_key = kick_skill.key
+            char = Char(user=self.user, name=name, skills=[kick_skill_key, ])
             char.put()
             self.redirect('/tour/')
         else:
@@ -107,6 +114,8 @@ class TourHandler(BaseHandler):
 
 class RoomHandler(BaseHandler):
     def get(self):
+        if self.char.battle:
+            self.redirect('/battle/')
         if self.char.room:
             room = self.char.room.get()
             self.render('room', {'room': room})
@@ -157,12 +166,60 @@ class ItemsHandler(BaseHandler):
 class BattleHandler(BaseHandler):
     def get(self):
         # compose your turn, wait for others
-        self.render('battle')
+        if self.char.battle:
+            # check if battle is ready to compute turns
+            battle = self.char.battle.get()
+            chars = [ch.get() for ch in battle.chars_alive]
+            skills = [s for s in self.char.skills]
+            if self._all_chars_turn_done(battle):
+                battle.compute_turn()
+                if battle.status == BATTLE_FINISHED:
+                    self.redirect('/room/')
+                else:
+                    self.render('battle', {'battle': battle, 'chars': chars, 'skills': skills})
+            else:
+                self.render('battle', {'battle': battle, 'chars': chars, 'skills': skills})
+        else:
+            self.redirect('/room/')
 
     def post(self):
         # char if everyone compose turn compute turns
+        if self.request.get('turn_action'):
+            battle = self.char.battle.get()
+            if self.char.battle_turn == battle.current_turn:
+                # compute valid turn
+                turn_actions = json.loads(self.request.get('turn_actions'))
+                print turn_actions
+                person_actions = self._validate_actions(turn_actions)
+                if not person_actions:
+                    self.redirect('/battle/')
+                else:
+                    turn_actions = battle.turn_actions
+                    turn_actions[self.char.key.id()] = person_actions
+                    battle.turn_actions = turn_actions
+                    battle.put()
+                    self.char.battle_turn += 1
+                    self.char.put()
         self.redirect('/battle/')
 
+    def _validate_actions(self, actions):
+        ap_left = self.char.attrs['ap']
+        person_actions = []
+        for a in actions: # turn_actions is a json of {'skill_key', 'aim_key': }
+            skill = Skill.getone(int(a['skill']))
+            ap_left -= skill.attrs['ap']
+            if skill.key not in self.char.skills or ap_left < 0:
+                return False
+            else:
+                person_actions.append(a)
+        return person_actions
+
+    def _all_chars_turn_done(self, battle):
+        chars_turn = min([ch.get().battle_turn for ch in battle.chars_alive])
+        if chars_turn > battle.current_turn:
+            return True
+        else:
+            return False
 
 class GardenHandler(BaseHandler):
     def get(self):

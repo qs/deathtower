@@ -140,7 +140,7 @@ class Char(BaseModel):
 
     @property
     def garden(self):
-        return Garden.query(Garden.char == self.key).get()
+        return Garden.query(Garden.char == self).get()
 
 
 class CharEffect():
@@ -149,7 +149,7 @@ class CharEffect():
     char = ndb.KeyProperty(required=True)
 
     def check_effect(self):
-        if self.char.battle.current_turn >= self.finish_turn:
+        if self.battle.current_turn >= self.finish_turn:
             self.disable_effect()
 
     def disable_effect(self):
@@ -173,9 +173,8 @@ class Item(BaseModel):
     attrs = ndb.JsonProperty(default=[])
 
     @classmethod
-    def generate(self, item_type, char=None, item_name=None):
-        if not item_name:
-            item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
+    def generate(self, item_type, char=None):
+        item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
         new_item = Item(name=item_name, type=item_type)
         special_attr = ITEM_ATTRS[item_type]
         new_item.attrs = {special_attr: 1}
@@ -335,6 +334,7 @@ class Battle(BaseModel):
     chars = ndb.KeyProperty(repeated=True)
     chars_alive = ndb.KeyProperty(repeated=True)
     room = ndb.KeyProperty()
+    turn_actions = ndb.JsonProperty(default={}) # empty every new turn, sort after all do actions
 
     def lose(self, pers):
         self.chars_alive = [c for c in self.chars_alive if c != pers]
@@ -343,9 +343,23 @@ class Battle(BaseModel):
     @classmethod
     def generate_new(self, chars, room):
         battle = Battle(**{'chars': chars, 'chars_alive': chars, 'room': room})
+        battle_key = battle.put()
         for c in chars:
-            character = c.get()
-            character.battle = battle.key
-            character.put()
-        battle.put()
-        return battle.key.get()
+            char = c.get()
+            char.battle = battle_key
+            char.battle_turn = 1
+            char.put()
+        return battle_key
+
+    def compute_turn(self):
+        chars = sorted([ch.get() for ch in self.chars_alive], key=lambda x: x.attrs['spd'], reverse=True)
+        turn_actions = self.turn_actions
+        for ch in chars:
+            acts = turn_actions.pop(unicode(ch.key.id()))
+            for a in acts:
+                skill = Skill.getone(int(a['skill']))
+                target = Char.getone(int(a['aim']))
+                ch.fight(target, skill)
+        self.current_turn += 1
+        self.turn_actions = {}
+        self.put()

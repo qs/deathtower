@@ -4,8 +4,97 @@
 
 
 {% block content %}
+<h4 class="text-center">Текущий ход: {{ battle.current_turn }}</h4>
+{% if char.battle_turn > battle.current_turn %}
+        Ожидание хода противников
+        <META HTTP-EQUIV="Refresh" CONTENT="5">
+{% else %}
+<p>Доступно AP:</p>
+    <div class="col-xs-1">
+      <input class="form-control" name="ap_left" id="ap_left" type="text" value="{{ char.attrs['ap'] }}" disabled>
+    </div>
+<br /><br />
+<h4>Доступные приемы</h4>
+<ul>
+{% for s in char.get_skills() %}
+        <li><a href="#" role="button" id="skill{{ s.key.id() }}" class="skill">{{ s.name }} {{ s.attrs['ap'] }} AP</a></li>
+{% endfor %}
+</ul>
+<p>Подсказка: <span id="hint">Выберите действие</span></p>
+{% endif %}
+<h4>Противники</h4>
+<ul>
+{% for ch in chars %}
+        {% if ch.key != char.key %}
+        <li><a href="#" role="button" id="enemy{{ ch.key.id() }}" class="enemy">{{ ch.name }} [{{ ch.attrs['hp'] }}/{{ ch.attrs['hp_max'] }}]</a></li>
+        {% endif %}
+{% endfor %}
+</ul>
+
+{% if char.battle_turn <= battle.current_turn %}
+<form class="form-horizontal" role="form" method="POST">
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Ваш ход:</label>
+    <div class="col-xs-4">
+      <textarea class="form-control" name="turn_action_texts" id="turn_action_texts" type="text" disabled></textarea>
+    </div>
+  </div>
+  <input type="hidden" name="turn_actions" id="turn_actions">
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" id="turn_action" name="turn_action" class="btn btn-default" value="Сделать ход">
+      <button id="clear_action" name="clear_action" class="btn btn-default">Очистить</button>
+    </div>
+  </div>
+</form>
+{% endif %}
 
 выбор своих действий: выбор приема, выбор цели(целей)
 ожидание следующего хода
+
+
+<script>
+
+var skills = {
+{% for s in char.get_skills() %}
+    '{{ s.key.id() }}': {'name': '{{s.name }}', 'ap': {{s.attrs['ap'] }} },
+{% endfor %}
+};
+
+var enemies = {
+{% for ch in chars %}
+    '{{ ch.key.id() }}': '{{ch.name }}',
+{% endfor %}
+};
+
+var skill_id = 0;
+var aim_id = 0;
+var action_text = '';
+var action_hidden = [];
+
+$('.skill').click(function() {
+    skill_id = $(this).attr("id").replace('skill', '');
+    $('#hint').html('Выберите цель');
+});
+
+$('.enemy').click(function() {
+    enemy_id = $(this).attr("id").replace('enemy', '');
+    var ap_left = parseInt($('#ap_left').val());
+    if (skill_id != 0 && (ap_left - skills[skill_id]['ap']) > 0) {
+        var ap = skills[skill_id]['ap'];
+        action_text += ' ' + skills[skill_id]['name'] + ' ' + enemies[enemy_id] + ', ';
+        $('#turn_action_texts').val(action_text);
+        action_hidden.push({'skill': skill_id, 'aim': enemy_id});
+        $('#turn_actions').val(JSON.stringify(action_hidden));
+        var ap_left_new = ap_left - ap;
+        $('#ap_left').val(ap_left_new);
+        skill_id = 0;
+        enemy_id = 0;
+        $('#hint').html('Выберите действие');
+    }
+});
+
+
+</script>
 
 {% endblock %}
