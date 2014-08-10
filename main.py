@@ -120,6 +120,8 @@ class RoomHandler(BaseHandler):
         if self.char.battle:
             self.redirect('/battle/')
         if self.char.room:
+            if len(self.char.tour.chars_alive) == 1:
+                self.redirect('/final/')
             room = self.char.room.get()
             self.render('room', {'room': room})
         else:
@@ -138,8 +140,17 @@ class RoomHandler(BaseHandler):
             curr_char = self.char
             char_to_fight = Char.getone(int(escape(self.request.get('room_fight_id'))))
             chars_in_battle = [char_to_fight.key, self.char.key]
-            battle = char_to_fight.battle if char_to_fight.battle else Battle.generate_new(chars=chars_in_battle, room=self.char.room)
+            if char_to_fight.battle:
+                battle_id = char_to_fight.battle
+            else:
+                battle_id = Battle.generate_new(chars=chars_in_battle, room=self.char.room)
+            battle = battle_id.get()
+            if not curr_char in battle.chars:
+                battle.chars += [curr_char,]
+                battle.chars_alive += [curr_char,]
+                battle.put()
             curr_char.battle_turn = (battle.get().current_turn + 1) if battle.get().current_turn > 1 else battle.get().current_turn
+            curr_char.battle = battle_id
             curr_char.put()
             self.redirect('/battle/')
         elif self.request.get('room_item'):
@@ -149,8 +160,14 @@ class RoomHandler(BaseHandler):
 
 class FinalHandler(BaseHandler):
     def get(self):
+        tour = self.char.tour
+        if len(self.char.tour.chars_alive) == 1:
+            exp = 10
+            stats = {'winner': self.char, 'tour': tour, 'exp': exp}
+            self.char.exp += exp
+            tour.win(self.char)
         # show stats after final battle finishing tournament
-        self.render('final')
+        self.render('final', stats)
 
 
 class CharHandler(BaseHandler):

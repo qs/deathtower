@@ -280,15 +280,24 @@ class Tour(BaseModel):
     def upd_chars(self):
         self.chars_obj = [ch.get() for ch in self.chars]
 
+    def win(self, pers):
+        if len(self.chars_alive) <= 1:
+            self.finish_dt = datetime.datetime.now()
+            pers.tour = None
+            pers.room = None
+            pers.battle_turn = None
+            pers.put()
+
     def lose(self, pers):
         self.chars_alive = [c for c in self.chars_alive if c != pers.key]
         self.put()
         if len(self.chars_alive) <= 1:
             winner = self.chars_alive[0].get()
+            self.win(winner)
             winner.battle = None
-            winner.tour = None
-            winner.room = None
-            winner.battle_turn = None
+#            winner.tour = None
+#            winner.room = None
+#            winner.battle_turn = None
             winner.put()
 
     def start_tour(self):

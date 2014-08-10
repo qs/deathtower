@@ -1,0 +1,22 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Заявки на турнир{% endblock %}
+
+
+{% block content %}
+<div class="row">
+Победитель <strong>{{char.name}}</strong>!
+</div>
+
+<div class="row">
+    Турнир проходил с {{tour.start_dt}} по {{tour.finish_dt}}.
+</div>
+
+В турнире участвовали:
+            {% for ch in tour.chars %}
+                    <div class="row">{{ ch.name }} [{{ ch.level }}]</div>
+
+            {% endfor %}
+
+
+{% endblock %}
