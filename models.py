@@ -124,8 +124,16 @@ class Char(BaseModel):
         target.acc_dmg(dmg, is_crit)
 
     def lose(self):
-        self.battle.get().lose(self)
-        self.tour.get().lose(self)
+        room = self.room
+        for i in self.items:
+            if not i.item_type == ITEM_SEED:
+                room.items.append(i)
+        battle = self.battle.get()
+        battle.lose(self)
+        battle.put()
+        tour = self.tour.get()
+        tour.lose(self)
+        tour.put()
         self.battle = None
         self.tour = None
         self.room = None
@@ -173,7 +181,7 @@ class Char(BaseModel):
 
     @property
     def garden(self):
-        return Garden.query(Garden.char == self).get()
+        return Garden.query(Garden.char == self.key).get()
 
 
 class CharEffect(BaseModel):
@@ -206,8 +214,9 @@ class Item(BaseModel):
     attrs = ndb.JsonProperty(default=[])
 
     @classmethod
-    def generate(self, item_type, char=None):
-        item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
+    def generate(self, item_type, char=None, item_name=None):
+        if not item_name:
+            item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
         new_item = Item(name=item_name, type=item_type)
         special_attr = ITEM_ATTRS[item_type]
         new_item.attrs = {special_attr: 1}
@@ -247,10 +256,10 @@ class Tour(BaseModel):
         self.chars_obj = [ch.get() for ch in self.chars]
 
     def lose(self, pers):
-        self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.chars_alive = [c for c in self.chars_alive if c != pers.key]
         self.put()
         if len(self.chars_alive) <= 1:
-            winner = self.chars_alive[0]
+            winner = self.chars_alive[0].get()
             winner.battle = None
             winner.tour = None
             winner.room = None
@@ -320,7 +329,7 @@ class Garden(BaseModel):  # tournament session room
         already_items = []
         now = datetime.datetime.now()
         for plant in all_plants:
-            if now <= plant.finish_dt:
+            if now >= plant.finish_dt:
                 fruit = plant.get_fruit()
                 already_items.append(fruit)
             else:
@@ -374,12 +383,13 @@ class Battle(BaseModel):
     turn_actions = ndb.JsonProperty(default={}) # empty every new turn, sort after all do actions
 
     def lose(self, pers):
-        self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.chars_alive = [c for c in self.chars_alive if c != pers.key]
         self.put()
         if len(self.chars_alive) <= 1:
-            winner = self.chars_alive[0]
+            winner = self.chars_alive[0].get()
             winner.battle = None
             winner.battle_turn = None
+            winner.attrs['hp'] = winner.attrs['hp_max']
             winner.put()
 
     @classmethod

@@ -35,12 +35,14 @@
 
 <form class="form-horizontal" role="form" method="POST">
     {% for i in items %}
+    {% if i%}
     <div class="radio" >
       <label>
         <input type="radio" name="room_item_id" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
           {{ i.name }}
       </label>
     </div>
+    {% endif %}
     {% endfor %}
   <br />
   <div class="form-group">
