@@ -47,7 +47,16 @@
         <div class="radio" >
           <label>
             <input type="radio" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" class="item">
-              {{ i.name }}
+            <img {% if i.name == 'Семечко подсолнуха' %}src="/static/pics/SEED_podsolnuha.bmp" width="16" height="16"
+          {% elif i.type == 5 %} src="/static/pics/SEED_nice.bmp" width="16" height="16"
+          {% elif i.name == 'Лечилка' %}src="/static/pics/DRINK_heal_small.bmp" width="20" height="20"
+          {% elif i.name == 'Мега-лечилка' %}src="/static/pics/DRINK_heal_big.bmp" width="20" height="17"
+          {% elif i.name == 'Эссенция бесполезности' %}src="/static/pics/DRINK.bmp" width="16" height="16"
+          {% elif i.name == 'Интереснейший хлам' %}src="/static/pics/MISC_hlam.bmp" width="16" height="13"
+          {% elif i.name == 'Дубинка радости' %}src="/static/pics/HAND_happy.bmp" width="10" height="29"
+          {% elif i.name == 'Меч' %}src="/static/pics/HAND_sword.bmp" width="10" height="29"
+          {% else %} src=''{% endif %}/>
+           {{ i.name }}
           </label>
         </div>
       <input type="hidden" id="room_item_id" name="room_item_id" value="">
