@@ -348,7 +348,12 @@ class Room(BaseModel):  # tournament session room
         return [i.get() for i in self.items]
 
     def get_chars(self):
-        return set(Char.query(Char.room == self.key))
+        chars = Char.query(Char.room == self.key)
+        r_chars = []
+        for c in chars:
+            if not c in r_chars:
+                r_chars.append(c)
+        return r_chars
 
 
 class Garden(BaseModel):  # tournament session room
