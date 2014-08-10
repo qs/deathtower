@@ -125,9 +125,9 @@ class Char(BaseModel):
 
     def lose(self):
         room = self.room.get()
-        for i in self.items:
-            if not i.get().type == ITEM_SEED:
-                room.items.append(i)
+        #for i in self.items:
+        #    if not i.get().type == ITEM_SEED:
+        #        room.items.append(i)
         battle = self.battle.get()
         battle.lose(self)
         battle.put()
