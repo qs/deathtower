@@ -177,7 +177,9 @@ class ItemsHandler(BaseHandler):
 
     def post(self):
         if self.request.get('item_drop'):
-            pass
+            if self.char.room:
+                pass
+            else:
         # use item, put on, take off item, drop down
         self.redirect('/items/')
 
