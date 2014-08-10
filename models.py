@@ -129,6 +129,7 @@ class Char(BaseModel):
         self.battle = None
         self.tour = None
         self.room = None
+        self.battle_turn = None
         self.items = [i for i in self.items if i.item_type == ITEM_SEED]
         self.attrs['hp'] = self.attrs['hp_max']
         self.put()
@@ -253,6 +254,7 @@ class Tour(BaseModel):
             winner.battle = None
             winner.tour = None
             winner.room = None
+            winner.battle_turn = None
             winner.put()
 
     def start_tour(self):
@@ -377,6 +379,7 @@ class Battle(BaseModel):
         if len(self.chars_alive) <= 1:
             winner = self.chars_alive[0]
             winner.battle = None
+            winner.battle_turn = None
             winner.put()
 
     @classmethod
