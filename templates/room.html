@@ -24,7 +24,7 @@
 {% if room.get_chars() %}
 Или можете подраться:
 <form class="form-horizontal"  id="room_fight_form" role="form" method="POST">
-    {% for c in room.get_chars() %}
+    {% for c in set(room.get_chars()) %}
     {% if c.key != char.key %}
         <div class="radio" >
           <label>

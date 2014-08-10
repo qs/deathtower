@@ -138,7 +138,7 @@ class Char(BaseModel):
         self.tour = None
         self.room = None
         self.battle_turn = None
-        self.items = [i for i in self.items if i.get().type == ITEM_SEED]
+        self.items = [i for i in self.items if i and i.get() and i.get().type == ITEM_SEED]
         self.attrs['hp'] = self.attrs['hp_max']
         self.put()
 
