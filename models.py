@@ -126,7 +126,7 @@ class Char(BaseModel):
     def lose(self):
         room = self.room
         for i in self.items:
-            if not i.get().item_type == ITEM_SEED:
+            if not i.get().type == ITEM_SEED:
                 room.items.append(i)
         battle = self.battle.get()
         battle.lose(self)
@@ -138,7 +138,7 @@ class Char(BaseModel):
         self.tour = None
         self.room = None
         self.battle_turn = None
-        self.items = [i for i in self.items if i.item_type == ITEM_SEED]
+        self.items = [i for i in self.items if i.get().type == ITEM_SEED]
         self.attrs['hp'] = self.attrs['hp_max']
         self.put()
 
