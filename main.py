@@ -133,10 +133,12 @@ class RoomHandler(BaseHandler):
             # move to another room, attack person or pickiu item
             self.redirect('/room/')
         elif self.request.get('room_fight'):
+            curr_char = self.char
             char_to_fight = Char.getone(int(escape(self.request.get('room_fight_id'))))
             chars_in_battle = [char_to_fight.key, self.char.key]
-            battle = char_to_fight.battle if char_to_fight.battle else Battle.generate_new(chars=chars_in_battle, chars_alive=chars_in_battle, room=self.char.room)
-            self.char.current_turn = (battle.current_turn + 1) if battle.current_turn > 1 else battle.current_turn
+            battle = char_to_fight.battle if char_to_fight.battle else Battle.generate_new(chars=chars_in_battle, room=self.char.room)
+            curr_char.battle_turn = (battle.get().current_turn + 1) if battle.get().current_turn > 1 else battle.get().current_turn
+            curr_char.put()
             self.redirect('/battle/')
         elif self.request.get('room_item'):
             item_pickup = Item.getone(int(escape(self.request.get('room_item_id'))))

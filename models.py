@@ -129,18 +129,20 @@ class Char(BaseModel):
         self.battle = None
         self.tour = None
         self.room = None
+        self.battle_turn = None
         self.items = [i for i in self.items if i.item_type == ITEM_SEED]
         self.attrs['hp'] = self.attrs['hp_max']
         self.put()
 
     def acc_dmg(self, dmg, is_crit):
-        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
-        mod = 2 if is_crit and not me_crit else 1
-        mod = 0.5 if me_crit and not is_crit else mod
-        self.attrs['hp'] -= int(dmg * mod)
-        self.put()
-        if self.attrs['hp'] <= 0:
-            self.lose()
+        if self.battle:
+            me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
+            mod = 2 if is_crit and not me_crit else 1
+            mod = 0.5 if me_crit and not is_crit else mod
+            self.attrs['hp'] -= int(dmg * mod)
+            self.put()
+            if self.attrs['hp'] <= 0:
+                self.lose()
 
     def get_skills(self):
         return [s.get() for s in self.skills]
@@ -251,6 +253,8 @@ class Tour(BaseModel):
             winner = self.chars_alive[0]
             winner.battle = None
             winner.tour = None
+            winner.room = None
+            winner.battle_turn = None
             winner.put()
 
     def start_tour(self):
@@ -371,11 +375,12 @@ class Battle(BaseModel):
 
     def lose(self, pers):
         self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.put()
         if len(self.chars_alive) <= 1:
             winner = self.chars_alive[0]
             winner.battle = None
+            winner.battle_turn = None
             winner.put()
-        self.put()
 
     @classmethod
     def generate_new(self, chars, room):
