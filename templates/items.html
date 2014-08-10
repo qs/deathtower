@@ -16,19 +16,8 @@
   	</div>
     {% endif %}
   	<!--INVENTORY-->
-  	<div class="row">
-        {% for i in char.items %}
-<div class="col-xs-1"><span class="glyphicon glyphicon-{% if i.type == 0 or i.type == 2 or i.type == 3%}star{%elif i.type == 1%}screenshot{%elif i.type == 4%}glass{%elif i.type == 5%}leaf{%endif%}"></span></div>
-        {% if not loop.index is not divisibleby(8) %}
-        </div>
-<div class="row">
-    {% endif%}
-  {% endfor %}
-</div>
-    </div>
 
-
-<form class="form-horizontal" role="form" method="POST">
+<form class="form-horizontal" id="item_drop" role="form" method="POST">
     {% for i in items %}
     {% if i%}
     <div class="radio" >
@@ -51,8 +40,8 @@
   <br />
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" id="item_drop" name="item_drop" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span>Выбросить</button>
-      <button type="submit" id="item_puton" name="item_puton" class="btn btn-default"><span class="glyphicon glyphicon-user"></span>Применить</button>
+      <input type="submit" id="item_drop" name="item_drop" class="btn btn-default" value="Выбросить">
+      <input type="submit" id="item_puton" name="item_puton" class="btn btn-default" value="Применить">
     </div>
   </div>
 </form>
