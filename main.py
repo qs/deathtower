@@ -181,10 +181,18 @@ class ItemsHandler(BaseHandler):
 
     def post(self):
         if self.request.get('item_drop'):
-            if self.char.room:
-                pass
-            else:
-                pass
+            item = Item.getone(int(escape(self.request.get('room_item_id'))))
+            char = self.char
+            room = self.char.room
+            if room:
+                room.items += [item, ]
+                room.put()
+            for i in xrange(0, len(char.items)):
+                if char.items[i] == item.key:
+                    char.items.pop(i)
+                    char.put()
+                    break
+
         # use item, put on, take off item, drop down
         self.redirect('/items/')
 
