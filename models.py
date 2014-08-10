@@ -181,7 +181,7 @@ class Char(BaseModel):
 
     @property
     def garden(self):
-        return Garden.query(Garden.char == self).get()
+        return Garden.query(Garden.char == self.key).get()
 
 
 class CharEffect(BaseModel):
@@ -214,8 +214,9 @@ class Item(BaseModel):
     attrs = ndb.JsonProperty(default=[])
 
     @classmethod
-    def generate(self, item_type, char=None):
-        item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
+    def generate(self, item_type, char=None, item_name=None):
+        if not item_name:
+            item_name = ITEM_NAMES[item_type][random.randint(0, len(ITEM_NAMES[item_type])-1)]
         new_item = Item(name=item_name, type=item_type)
         special_attr = ITEM_ATTRS[item_type]
         new_item.attrs = {special_attr: 1}
@@ -328,7 +329,7 @@ class Garden(BaseModel):  # tournament session room
         already_items = []
         now = datetime.datetime.now()
         for plant in all_plants:
-            if now <= plant.finish_dt:
+            if now >= plant.finish_dt:
                 fruit = plant.get_fruit()
                 already_items.append(fruit)
             else:
@@ -388,6 +389,7 @@ class Battle(BaseModel):
             winner = self.chars_alive[0].get()
             winner.battle = None
             winner.battle_turn = None
+            winner.attrs['hp'] = winner.attrs['hp_max']
             winner.put()
 
     @classmethod
