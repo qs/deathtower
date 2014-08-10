@@ -154,10 +154,19 @@ class FinalHandler(BaseHandler):
 class CharHandler(BaseHandler):
     def get(self):
         # character screen, stats
-        self.render('char')
+        self.render('char', {'char': self.char})
 
     def post(self):
         # update stats
+        if self.request.get('stat_add_type'):
+            stat_type = escape(self.request.get('stat_add_type'))
+            if self.char.attrs['free_pts'] > 0:
+                self.char.attrs[stat_type] += 1
+                self.char.attrs['free_pts'] -= 1
+                if stat_type == 'con' and self.char.attrs['con'] % 2 == 0:
+                    self.char.attrs['hp_max'] += 1
+                    self.char.attrs['hp'] += 1
+                self.char.put()
         self.redirect('/char/')
 
 

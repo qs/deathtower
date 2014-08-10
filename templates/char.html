@@ -4,7 +4,63 @@
 
 
 {% block content %}
+<h2>{{ char.name }}</h2>
+<ul>
+    <li>Уровень: {{ char.level }}</li>
+    <li>Опыт: {{ char.exp }}</li>
+</ul>
+<hr />
+<form class="form-horizontal" id="stat_add_form" role="form" method="POST">
+  <div class="form-group">
+    <label for="str" class="col-xs-2 control-label">Сила:</label>
+    <div class="input-group col-xs-1">
+      <input type="text" class="form-control" id="str" name="" value="{{ char.attrs['str'] }}" disabled>
+      <div class="input-group-addon"><a href="#"><strong id="str_add" class="stat_add">+</strong></a></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="dex" class="col-xs-2 control-label">Ловкость:</label>
+    <div class="input-group col-xs-1">
+      <input type="text" class="form-control" id="dex" name="" value="{{ char.attrs['dex'] }}" disabled>
+      <div class="input-group-addon"><a href="#"><strong id="dex_add" class="stat_add">+</strong></a></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="con" class="col-xs-2 control-label">Выносливость:</label>
+    <div class="input-group col-xs-1">
+      <input type="text" class="form-control" id="con" name="" value="{{ char.attrs['con'] }}" disabled>
+      <div class="input-group-addon"><a href="#"><strong id="con_add" class="stat_add">+</strong></a></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="int" class="col-xs-2 control-label">Интеллект:</label>
+    <div class="input-group col-xs-1">
+      <input type="text" class="form-control" id="int" name="" value="{{ char.attrs['int'] }}" disabled>
+      <div class="input-group-addon"><a href="#"><strong id="int_add" class="stat_add">+</strong></a></div>
+    </div>
+  </div>
+  <hr />
+  <div class="form-group">
+    <label for="free_pts" class="col-xs-2 control-label">Свободные очки:</label>
+    <div class="input-group col-xs-1">
+      <input type="text" class="form-control" id="free_pts" name="" value="{{ char.attrs['free_pts'] }}" disabled>
+    </div>
+  </div>
+    <input type="hidden" id="stat_add_type" name="stat_add_type" value="">
+</form>
+<hr />
+Доступные умения:
+<ul>
+    {% for s in char.get_skills() %}
+    <li>{{ s.name }} AP: {{ s.attrs['ap'] }}</li>
+    {% endfor %}
+</ul>
 
-распределение статов
-
+<script>
+$('.stat_add').click(function() {
+    var stat_name = $(this).attr("id").replace('_add', '');
+    $('input[id=stat_add_type]').val(stat_name);
+    $('#stat_add_form').submit();
+});
+</script>
 {% endblock %}
