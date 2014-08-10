@@ -7,65 +7,77 @@
 
 <h3>{{ room.name }}</h3>
 Вы можете пройти:
-<form class="form-horizontal" role="form" method="POST">
+<form class="form-horizontal" id="room_move_form" role="form" method="POST">
     {% for r in room.get_dirs() %}
     <div class="radio" >
       <label>
-        <input type="radio" name="room_move_id" id="room{{ r.key.id() }}" value="{{ r.key.id() }}" {% if loop.first %}checked{% endif %}>
+        <input type="radio" id="move{{ r.key.id() }}" value="{{ r.key.id() }}" class="move">
           {{ r.name }}
       </label>
     </div>
+  <input type="hidden" id="room_move_id" name="room_move_id" value="">
+  <input type="hidden" name="room_move" value="1">
     {% endfor %}
   <br />
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" id="room_move" name="room_move" class="btn btn-default" value="Идти">
-    </div>
-  </div>
 </form>
 
 {% if room.get_chars() %}
 Или можете подраться:
-<form class="form-horizontal" role="form" method="POST">
+<form class="form-horizontal"  id="room_fight_form" role="form" method="POST">
     {% for c in room.get_chars() %}
     {% if c.key != char.key %}
-    <div class="radio" >
-      <label>
-        <input type="radio" name="room_fight_id" id="char{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
-          {{ c.name }}
-      </label>
-    </div>
+        <div class="radio" >
+          <label>
+            <input type="radio" id="fight{{ c.key.id() }}" value="{{ c.key.id() }}" class="fight">
+              {{ c.name }}
+          </label>
+        </div>
+      <input type="hidden" id="room_fight_id" name="room_fight_id" value="">
+      <input type="hidden" name="room_fight" value="1">
     {% endif %}
     {% endfor %}
   <br />
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" id="room_fight" name="room_fight" class="btn btn-default" value="В бой!">
-    </div>
-  </div>
 </form>
 {% endif %}
 
 {% if room.get_items() %}
 В комнате разбросаны предметы:
-<form class="form-horizontal" role="form" method="POST">
-    {% for c in room.get_items() %}
-    <div class="radio" >
-      <label>
-        <input type="radio" name="room_item_id" id="item{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
-          {{ c.name }}
-      </label>
-    </div>
+<form class="form-horizontal"  id="room_item_form" role="form" method="POST">
+    {% for i in room.get_items() %}
+        <div class="radio" >
+          <label>
+            <input type="radio" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" class="item">
+              {{ i.name }}
+          </label>
+        </div>
+      <input type="hidden" id="room_item_id" name="room_item_id" value="">
+      <input type="hidden" name="room_item" value="1">
     {% endfor %}
   <br />
-  <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-      <input type="submit" id="room_item" name="room_item" class="btn btn-default" value="Взять!">
-    </div>
-  </div>
 </form>
 
 {% endif %}
 
+
+<script>
+$('.move').click(function() {
+    var room_id = $(this).attr("id").replace('move', '');
+    $('input[id=room_move_id]').val(room_id);
+    $('#room_move').val(1);
+    $('#room_move_form').submit();
+});
+$('.fight').click(function() {
+    var char_id = $(this).attr("id").replace('fight', '');
+    $('input[id=room_fight_id]').val(char_id);
+    $('#room_fight').val(1);
+    $('#room_fight_form').submit();
+});
+$('.item').click(function() {
+    var item_id = $(this).attr("id").replace('item', '');
+    $('input[id=room_item_id]').val(item_id);
+    $('#room_item').val(1);
+    $('#room_item_form').submit();
+});
+</script>
 
 {% endblock %}
