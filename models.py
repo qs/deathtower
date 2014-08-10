@@ -75,6 +75,7 @@ ITEM_ATTRS = {ITEM_HEAD: 'res_dmg',
                 ITEM_SEED: 'type',
                 ITEM_MISC: 'type'}
 
+
 class BaseModel(ndb.Model):
     @classmethod
     def getone(c, key_name):
@@ -101,6 +102,7 @@ class Char(BaseModel):
     skills = ndb.KeyProperty(repeated=True)  # list of Skill
     effects = ndb.KeyProperty(repeated=True)  # list of CharEffect
     room = ndb.KeyProperty()  # Room in tournament
+    battle_turn = ndb.IntegerProperty(default=1)
 
     @classmethod
     def get_char_by_user(cls, user):
@@ -116,9 +118,9 @@ class Char(BaseModel):
                 dmg += w.attrs.get('dmg')
         return dmg
 
-    def fight(self, target):
-        dmg = 1 + self.attrs['STR'] / 2 + self.get_add_patk()
-        is_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['DEX'] / 2) + 1) else False
+    def fight(self, target, skill):
+        dmg = 1 + self.attrs['str'] / 2 + self.get_add_patk()
+        is_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
         target.acc_dmg(-dmg, is_crit)
 
     def lose(self):
@@ -131,19 +133,22 @@ class Char(BaseModel):
         self.put()
 
     def acc_dmg(self, dmg, is_crit):
-        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['DEX'] / 2) + 1) else False
+        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
         mod = 2 if is_crit and not me_crit else 1
         mod = 0.5 if me_crit and not is_crit else mod
         self.attrs['hp'] += -int(dmg * mod)
         if self.attrs['hp'] <= 0:
             self.lose()
 
+    def get_skills(self):
+        return [s.get() for s in self.skills]
+
     @property
     def garden(self):
         return Garden.query(Garden.char == self).get()
 
 
-class CharEffect():
+class CharEffect(BaseModel):
     effect = ndb.KeyProperty(required=True)
     finish_turn = ndb.IntegerProperty(required=True, default=1)
     char = ndb.KeyProperty(required=True)
@@ -155,12 +160,12 @@ class CharEffect():
     def disable_effect(self):
         self.key.delete()
 
-class Effect():
+class Effect(BaseModel):
     name = ndb.StringProperty(required=True)
     attrs = ndb.JsonProperty(default=[])#here 'type':'bad' or 'good'
 
 
-class Skill():
+class Skill(BaseModel):
     name = ndb.StringProperty(required=True)
     attrs = ndb.JsonProperty(default=DEFAULT_SKILL_ATTRS)
 
