@@ -5,18 +5,6 @@
 
 {% block content %}
 <div class="row">
-    {% if char.worns%}
-  	 <div class="row">
-	  	 <div class="col-xs-3">
-            Одежда:
-             {% for w in char.worns %}
-    	  	 	<p>{{ w.get().name }}</p>
-             {% endfor %}
-	  	 </div>
-  	</div>
-    {% endif %}
-  	<!--INVENTORY-->
-
 
 <form class="form-horizontal" id="item_worn_form" role="form" method="POST">
     {% for i in char.get_worns() %}
