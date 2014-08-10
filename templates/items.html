@@ -5,11 +5,6 @@
 
 {% block content %}
 <div class="row">
-  	<div class="row">
-  		<div class="col-xs-1 label label-danger">HP {{ char.attrs['hp'] }}/{{ char.attrs['hp_max'] }}</div>
-  		<div class="col-xs-1 label label-warning">AP {{ char.attrs['ap'] }}</div>
-  		<h3>{{ char.name }}</h3>
-  	</div>
     {% if char.worns%}
   	 <div class="row">
 	  	 <div class="col-xs-3">

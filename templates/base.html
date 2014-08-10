@@ -28,7 +28,13 @@
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             {% if char %}
-              <li><p class="navbar-text">{{ char.name }} [{{ char.attrs['hp'] }}/{{ char.attrs['hp_max'] }}]</p></li>
+              <li>
+                  <div class="col-xs-12" style="margin: 0; margin-top: 8px;">
+                    <div class="col-xs-10 label label-danger">HP {{ char.attrs['hp'] }}/{{ char.attrs['hp_max'] }}</div>
+                    <div class="col-xs-10 label label-warning">AP {{ char.attrs['ap'] }}</div>
+                  </div>
+              </li>
+              <li><p class="navbar-text"><strong>{{char.name}}</strong></p></li>
               <li><a href="/char/">Характеристики</a></li>
               <li><a href="/items/">Инвентарь</a></li>
             {% endif %}
