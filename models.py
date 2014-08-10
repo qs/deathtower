@@ -134,13 +134,14 @@ class Char(BaseModel):
         self.put()
 
     def acc_dmg(self, dmg, is_crit):
-        me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
-        mod = 2 if is_crit and not me_crit else 1
-        mod = 0.5 if me_crit and not is_crit else mod
-        self.attrs['hp'] -= int(dmg * mod)
-        self.put()
-        if self.attrs['hp'] <= 0:
-            self.lose()
+        if self.battle:
+            me_crit = True if random.randint(1, 100) in range(1, 5 * (self.attrs['dex'] / 2) + 1) else False
+            mod = 2 if is_crit and not me_crit else 1
+            mod = 0.5 if me_crit and not is_crit else mod
+            self.attrs['hp'] -= int(dmg * mod)
+            self.put()
+            if self.attrs['hp'] <= 0:
+                self.lose()
 
     def get_skills(self):
         return [s.get() for s in self.skills]
