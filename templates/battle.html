@@ -24,7 +24,7 @@
 {% endif %}
 <h4>Противники</h4>
 <ul>
-{% for ch in set(chars) %}
+{% for ch in chars %}
         {% if ch.key != char.key %}
         <li><a href="#" role="button" id="enemy{{ ch.key.id() }}" class="enemy">{{ ch.name }} [{{ ch.attrs['hp'] }}/{{ ch.attrs['hp_max'] }}]</a></li>
         {% endif %}

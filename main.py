@@ -227,7 +227,7 @@ class BattleHandler(BaseHandler):
         if self.char.battle:
             # check if battle is ready to compute turns
             battle = self.char.battle.get()
-            chars = [ch.get() for ch in battle.chars_alive]
+            chars = set([ch.get() for ch in battle.chars_alive])
             skills = [s for s in self.char.skills]
             if self._all_chars_turn_done(battle):
                 battle.compute_turn()
