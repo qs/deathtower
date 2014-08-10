@@ -120,7 +120,7 @@ class RoomHandler(BaseHandler):
         if self.char.battle:
             self.redirect('/battle/')
         if self.char.room:
-            if len(self.char.tour.chars_alive) == 1:
+            if len(self.char.tour.get().chars_alive) == 1:
                 self.redirect('/final/')
             room = self.char.room.get()
             self.render('room', {'room': room})
