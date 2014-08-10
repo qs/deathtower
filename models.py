@@ -124,8 +124,8 @@ class Char(BaseModel):
         target.acc_dmg(dmg, is_crit)
 
     def lose(self):
-        self.battle.lose(self)
-        self.tour.lose(self)
+        self.battle.get().lose(self)
+        self.tour.get().lose(self)
         self.battle = None
         self.tour = None
         self.room = None
