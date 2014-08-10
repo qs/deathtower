@@ -46,11 +46,26 @@
 </form>
 {% endif %}
 
-{% if room.get_items()%}
-В комнате есть вещи:
-{% for item in room.get_items() %}
-    {{ item.name }}
-{% endfor %}
-{%endif%}
+{% if room.get_items() %}
+В комнате разбросаны предметы:
+<form class="form-horizontal" role="form" method="POST">
+    {% for c in room.get_items() %}
+    <div class="radio" >
+      <label>
+        <input type="radio" name="room_item_id" id="item{{ c.key.id() }}" value="{{ c.key.id() }}" {% if loop.first %}checked{% endif %}>
+          {{ c.name }}
+      </label>
+    </div>
+    {% endfor %}
+  <br />
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" id="room_item" name="room_item" class="btn btn-default" value="Взять!">
+    </div>
+  </div>
+</form>
+
+{% endif %}
+
 
 {% endblock %}

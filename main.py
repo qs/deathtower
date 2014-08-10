@@ -135,7 +135,10 @@ class RoomHandler(BaseHandler):
             char_to_fight = Char.getone(int(escape(self.request.get('room_fight_id'))))
             battle = char_to_fight.battle if char_to_fight.battle else Battle.generate_new(chars=[char_to_fight.key, self.char.key],room=self.char.room)
             self.redirect('/battle/')
-
+        elif self.request.get('room_item'):
+            item_pickup = Item.getone(int(escape(self.request.get('room_item_id'))))
+            self.char.pick_up_item(item_pickup.key)
+            self.redirect('/room/')
 
 class FinalHandler(BaseHandler):
     def get(self):
@@ -155,8 +158,8 @@ class CharHandler(BaseHandler):
 
 class ItemsHandler(BaseHandler):
     def get(self):
-        # inventory screen
-        self.render('items')
+        items = self.char.get_items()
+        self.render('items', {'items': items})
 
     def post(self):
         # use item, put on, take off item, drop down

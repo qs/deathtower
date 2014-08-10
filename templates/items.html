@@ -54,4 +54,22 @@
     </div>
 
 
+<form class="form-horizontal" role="form" method="POST">
+    {% for i in items %}
+    <div class="radio" >
+      <label>
+        <input type="radio" name="room_item_id" id="item{{ i.key.id() }}" value="{{ i.key.id() }}" {% if loop.first %}checked{% endif %}>
+          {{ i.name }}
+      </label>
+    </div>
+    {% endfor %}
+  <br />
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <input type="submit" id="room_item" name="room_item" class="btn btn-default" value="Выкинуть">
+      <input type="submit" id="room_item" name="room_item" class="btn btn-default" value="Надеть">
+    </div>
+  </div>
+</form>
+
 {% endblock %}

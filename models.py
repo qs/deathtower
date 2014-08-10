@@ -25,7 +25,7 @@ DEFAULT_CHAR_ATTRS = {
     'hp_max': 10,
     'dmg': 1,
     'spd': 5,
-    'ap': 2,
+    'ap': 10,
     'str': 1,
     'dex': 1,
     'con': 1,
@@ -142,6 +142,30 @@ class Char(BaseModel):
 
     def get_skills(self):
         return [s.get() for s in self.skills]
+
+    def get_items(self):
+        return [i.get() for i in self.items]
+
+    def pick_up_item(self, item_key):
+        room = self.room.get()
+        print item_key, room.items
+        if item_key not in room.items:
+            return False  # no item in this room
+        room.items.remove(item_key)
+        room.put()
+        self.items.append(item_key)
+        self.put()
+        return True
+
+    def drop_down_item(self, item_key):
+        room = self.room.get()
+        if item_key not in self.items:
+            return False  # no item in inventory
+        self.items.remove(item_key)
+        self.put()
+        room.items.append(item_key)
+        room.put()
+        return True
 
     @property
     def garden(self):
