@@ -176,6 +176,8 @@ class ItemsHandler(BaseHandler):
         self.render('items', {'items': items})
 
     def post(self):
+        if self.request.get('item_drop'):
+            pass
         # use item, put on, take off item, drop down
         self.redirect('/items/')
 

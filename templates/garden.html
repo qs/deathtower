@@ -4,34 +4,47 @@
 
 
 {% block content %}
-<div class="row">
+<div class="col-sm-4">
 {% if plants %}
 Рассада:
         {% for p in plants %}
-        {{p.name}}
+        <div><span class="glyphicon glyphicon-tree-deciduous"></span>{{p.name}}</div>
         {% endfor %}
 {% endif %}
 </div>
-<div class="row">
+<div class="col-sm-4">
 {% if already_items %}
 Урожай:
 {% for p in already_items %}
-{% if p.name %}{{ p.name }}{% else %} Лечилка {% endif %}
+<div><img {% if i.name == 'Семечко подсолнуха' %}src="/static/pics/SEED_podsolnuha.bmp" width="16" height="16"
+          {% elif i.type == 5 %} src="/static/pics/SEED_nice.bmp" width="16" height="16"
+          {% elif i.name == 'Лечилка' %}src="/static/pics/DRINK_heal_small.bmp" width="20" height="20"
+          {% elif i.name == 'Мега-лечилка' %}src="/static/pics/DRINK_heal_big.bmp" width="20" height="17"
+          {% elif i.name == 'Эссенция бесполезности' %}src="/static/pics/DRINK.bmp" width="16" height="16"
+          {% elif i.name == 'Интереснейший хлам' %}src="/static/pics/MISC_hlam.bmp" width="16" height="13"
+          {% elif i.name == 'Дубинка радости' %}src="/static/pics/HAND_happy.bmp" width="10" height="29"
+          {% elif i.name == 'Меч' %}src="/static/pics/HAND_sword.bmp" width="10" height="29"
+          {% else %} src=''{% endif %}/>{{ p.name }}</div>
 {% endfor %}
 {% endif %}
 {% if seeds%}
 </div>
-        <div class="row">
+        <div class="col-sm-4">
 Посадить:
 
 <form class="form-horizontal" role="form" method="POST">
-    {% for s in seeds %}
+    {% for s in char.items %}
+    {% if s.get().type == 5 %}
     <div class="radio" >
       <label>
         <input type="radio" name="seed_id" id="char{{ s.id() }}" value="{{ s.id() }}" {% if loop.first %}checked{% endif %}>
-          {% if s.name %}{{ s.name }}{% else %} Семечко {% endif %}
+          <img {% if s.get().name == 'Семечко подсолнуха' %}src="/static/pics/SEED_podsolnuha.bmp" width="16" height="16"
+          {% else %} src="/static/pics/SEED_nice.bmp" width="16" height="16"
+          {% endif %} />
+          {{ s.get().name }}
       </label>
     </div>
+    {% endif %}
     {% endfor %}
   <br />
   <div class="form-group">

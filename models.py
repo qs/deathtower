@@ -63,7 +63,7 @@ ROOM_GRAPH = {
 
 ITEM_NAMES = {ITEM_HEAD: [u'Шлем', u'Жуткий шлем'],
                 ITEM_BODY: [u'Доспех радости', u'Доспех дня'],
-                ITEM_HAND: [u'Дубинка радости', u'Букет', u'Вашь мечь'],
+                ITEM_HAND: [u'Дубинка радости', u'Букет', u'Меч'],
                 ITEM_DRINK: [u'Лечилка', u'Мега-лечилка'],
                 ITEM_SEED: [u'Семечко подсолнуха', u'Красивое семечко'],
                 ITEM_MISC: [u'Интереснейший хлам', u'Эссенция бесполезности']}
@@ -364,7 +364,7 @@ class Plant(BaseModel):
     def get_fruit(self):
         now = datetime.datetime.now()
         if self.finish_dt <= now:
-            new_item = Item.generate(self.type, self.garden.char)
+            new_item = Item.generate(self.type, self.garden.get().char)
             new_item.put()
             self.key.delete()
             return new_item
