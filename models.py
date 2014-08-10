@@ -131,7 +131,6 @@ class Char(BaseModel):
         self.room = None
         self.items = [i for i in self.items if i.item_type == ITEM_SEED]
         self.attrs['hp'] = self.attrs['hp_max']
-        self.attrs['ap'] = self.attrs['ap_max']
         self.put()
 
     def acc_dmg(self, dmg, is_crit):
