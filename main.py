@@ -10,6 +10,7 @@ from models import *
 from datetime import datetime, timedelta
 from google.appengine.api import users
 import json
+from random import randint
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
@@ -23,6 +24,7 @@ class BaseHandler(webapp2.RequestHandler):
     def render(self, tpl_file, tvals={}):
         tvals['logout'] = users.create_logout_url("/")
         tvals['char'] = self.char
+        tvals['randsix'] = randint(1, 6)
         tpl = jinja_environment.get_template('templates/' + tpl_file + '.html')
         self.response.out.write(tpl.render(tvals))
 
