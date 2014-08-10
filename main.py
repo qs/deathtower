@@ -180,6 +180,7 @@ class ItemsHandler(BaseHandler):
             if self.char.room:
                 pass
             else:
+                pass
         # use item, put on, take off item, drop down
         self.redirect('/items/')
 

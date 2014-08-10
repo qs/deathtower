@@ -124,7 +124,7 @@ class Char(BaseModel):
         target.acc_dmg(dmg, is_crit)
 
     def lose(self):
-        room = self.room
+        room = self.room.get()
         for i in self.items:
             if not i.get().type == ITEM_SEED:
                 room.items.append(i)
