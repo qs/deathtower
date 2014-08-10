@@ -398,6 +398,8 @@ class Battle(BaseModel):
                     skill = Skill.getone(int(a['skill']))
                     target = Char.getone(int(a['aim']))
                     ch.fight(target, skill)
+                    if (self.chars_alive) == 1:
+                        break
         self.current_turn += 1
         self.turn_actions = {}
         self.put()
