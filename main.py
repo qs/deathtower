@@ -149,7 +149,7 @@ class RoomHandler(BaseHandler):
                 battle.chars += [curr_char.key,]
                 battle.chars_alive += [curr_char.key,]
                 battle.put()
-            curr_char.battle_turn = (battle.get().current_turn + 1) if battle.get().current_turn > 1 else battle.get().current_turn
+            curr_char.battle_turn = (battle.current_turn + 1) if battle.current_turn > 1 else battle.current_turn
             curr_char.battle = battle_id
             curr_char.put()
             self.redirect('/battle/')
