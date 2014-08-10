@@ -146,8 +146,8 @@ class RoomHandler(BaseHandler):
                 battle_id = Battle.generate_new(chars=chars_in_battle, room=self.char.room)
             battle = battle_id.get()
             if not curr_char in battle.chars:
-                battle.chars += [curr_char,]
-                battle.chars_alive += [curr_char,]
+                battle.chars += [curr_char.key,]
+                battle.chars_alive += [curr_char.key,]
                 battle.put()
             curr_char.battle_turn = (battle.get().current_turn + 1) if battle.get().current_turn > 1 else battle.get().current_turn
             curr_char.battle = battle_id
