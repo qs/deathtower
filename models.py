@@ -124,8 +124,12 @@ class Char(BaseModel):
         target.acc_dmg(dmg, is_crit)
 
     def lose(self):
-        self.battle.get().lose(self)
-        self.tour.get().lose(self)
+        battle = self.battle.get()
+        battle.lose(self)
+        battle.put()
+        tour = self.tour.get()
+        tour.lose(self)
+        tour.put()
         self.battle = None
         self.tour = None
         self.room = None
@@ -247,10 +251,10 @@ class Tour(BaseModel):
         self.chars_obj = [ch.get() for ch in self.chars]
 
     def lose(self, pers):
-        self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.chars_alive = [c for c in self.chars_alive if c != pers.key]
         self.put()
         if len(self.chars_alive) <= 1:
-            winner = self.chars_alive[0]
+            winner = self.chars_alive[0].get()
             winner.battle = None
             winner.tour = None
             winner.room = None
@@ -374,10 +378,10 @@ class Battle(BaseModel):
     turn_actions = ndb.JsonProperty(default={}) # empty every new turn, sort after all do actions
 
     def lose(self, pers):
-        self.chars_alive = [c for c in self.chars_alive if c != pers]
+        self.chars_alive = [c for c in self.chars_alive if c != pers.key]
         self.put()
         if len(self.chars_alive) <= 1:
-            winner = self.chars_alive[0]
+            winner = self.chars_alive[0].get()
             winner.battle = None
             winner.battle_turn = None
             winner.put()
