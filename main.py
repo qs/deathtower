@@ -154,6 +154,8 @@ class FinalHandler(BaseHandler):
 class CharHandler(BaseHandler):
     def get(self):
         # character screen, stats
+        if self.char.battle:
+            self.redirect('/battle/')
         self.render('char', {'char': self.char})
 
     def post(self):
@@ -172,6 +174,8 @@ class CharHandler(BaseHandler):
 
 class ItemsHandler(BaseHandler):
     def get(self):
+        if self.char.battle:
+            self.redirect('/battle/')
         items = self.char.get_items()
         self.render('items', {'items': items})
 
