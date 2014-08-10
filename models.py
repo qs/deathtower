@@ -112,10 +112,10 @@ class Char(BaseModel):
     def get_add_patk(self):
         dmg = 0
         for e in self.effects:
-            dmg += e.attrs.get('dmg')
+            dmg += e.get().attrs.get('dmg')
         for w in self.worns:
-            if w.type == 'item_hand':
-                dmg += w.attrs.get('dmg')
+            if w.get().type == 'item_hand':
+                dmg += w.get().attrs.get('dmg')
         return dmg
 
     def fight(self, target, skill):
